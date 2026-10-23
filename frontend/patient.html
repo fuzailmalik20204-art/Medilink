@@ -150,6 +150,188 @@
             display: block;
         }
 
+        .visit-brief-card {
+            margin: 0 0 22px;
+            padding: 22px;
+            border: 1px solid #d8e9ed;
+            border-radius: 16px;
+            background: linear-gradient(135deg, #ffffff 0%, #f0fbfc 100%);
+            box-shadow: 0 10px 28px rgba(15, 61, 75, .06);
+        }
+
+        .visit-brief-header {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 18px;
+        }
+
+        .visit-brief-title {
+            display: flex;
+            align-items: flex-start;
+            gap: 13px;
+        }
+
+        .visit-brief-icon {
+            display: grid;
+            width: 42px;
+            height: 42px;
+            flex: 0 0 42px;
+            place-items: center;
+            border-radius: 13px;
+            background: #dff5f6;
+            color: #087f8c;
+        }
+
+        .visit-brief-card h2 {
+            margin: 0 0 5px;
+            color: #173b4b;
+            font: 700 18px "Poppins", sans-serif;
+        }
+
+        .visit-brief-card p {
+            color: #64748b;
+            font-size: 13px;
+            line-height: 1.55;
+        }
+
+        .visit-brief-generate {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            min-height: 42px;
+            padding: 0 16px;
+            border: 0;
+            border-radius: 10px;
+            background: linear-gradient(135deg, #0d8792, #086773);
+            color: #fff;
+            font: 700 13px "Inter", sans-serif;
+            cursor: pointer;
+            box-shadow: 0 6px 14px rgba(8, 103, 115, .18);
+        }
+
+        .visit-brief-generate:hover {
+            background: linear-gradient(135deg, #087f8c, #075e69);
+        }
+
+        .visit-brief-generate:focus-visible {
+            outline: 3px solid #79cbd1;
+            outline-offset: 3px;
+        }
+
+        .visit-brief-generate:disabled {
+            cursor: wait;
+            opacity: .7;
+        }
+
+        .visit-brief-notice,
+        .visit-brief-status {
+            margin-top: 14px;
+            color: #64748b;
+            font-size: 12px;
+            line-height: 1.6;
+        }
+
+        .visit-brief-notice {
+            padding: 11px 13px;
+            border-radius: 9px;
+            background: #f1f6f8;
+        }
+
+        .visit-brief-result {
+            display: grid;
+            gap: 16px;
+            margin-top: 18px;
+        }
+
+        .visit-brief-section {
+            padding-top: 14px;
+            border-top: 1px solid #e2edf0;
+        }
+
+        .visit-brief-section h3 {
+            margin: 0 0 9px;
+            color: #173b4b;
+            font-size: 14px;
+        }
+
+        .visit-brief-list {
+            display: grid;
+            gap: 9px;
+            padding-left: 18px;
+            color: #41566b;
+            font-size: 13px;
+            line-height: 1.55;
+        }
+
+        .visit-brief-list strong {
+            color: #243b53;
+        }
+
+        .visit-brief-source {
+            display: inline-block;
+            margin-top: 4px;
+            color: #087f8c;
+            font-size: 11px;
+            font-weight: 700;
+        }
+
+        .visit-brief-print {
+            justify-self: start;
+            padding: 9px 13px;
+            border: 1px solid #c9dfe3;
+            border-radius: 9px;
+            background: #fff;
+            color: #086773;
+            font: 700 12px "Inter", sans-serif;
+            cursor: pointer;
+        }
+
+        .visit-brief-print:hover {
+            background: #effafb;
+        }
+
+        @media print {
+            body.printing-visit-brief * {
+                visibility: hidden !important;
+            }
+
+            body.printing-visit-brief .visit-brief-card,
+            body.printing-visit-brief .visit-brief-card * {
+                visibility: visible !important;
+            }
+
+            body.printing-visit-brief .visit-brief-card {
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                margin: 0;
+                border: 0;
+                box-shadow: none;
+            }
+
+            body.printing-visit-brief .visit-brief-generate,
+            body.printing-visit-brief .visit-brief-print {
+                display: none !important;
+            }
+        }
+
+        @media (max-width: 640px) {
+            .visit-brief-card {
+                padding: 17px;
+            }
+
+            .visit-brief-header {
+                flex-direction: column;
+            }
+
+            .visit-brief-generate {
+                width: 100%;
+            }
+        }
+
         .welcome h1 {
             font-family: "Poppins", sans-serif;
             font-size: 27px;
@@ -2357,6 +2539,29 @@
             </div>
         </div>
 
+        <section class="visit-brief-card" aria-labelledby="visitBriefHeading">
+            <div class="visit-brief-header">
+                <div class="visit-brief-title">
+                    <div class="visit-brief-icon" aria-hidden="true"><i class="fa-solid fa-clipboard-list"></i></div>
+                    <div>
+                        <h2 id="visitBriefHeading">Appointment Visit Brief</h2>
+                        <p>Prepare for your appointment with a source-linked summary of your saved records and medication entries.</p>
+                    </div>
+                </div>
+                <button type="button" class="visit-brief-generate" id="generateVisitBriefButton"
+                    onclick="generateVisitBrief()">
+                    <i class="fa-solid fa-wand-magic-sparkles" aria-hidden="true"></i>
+                    Create my brief
+                </button>
+            </div>
+            <p class="visit-brief-notice">
+                Private and template-generated—no data is sent to an AI service. This is not medical advice;
+                verify medication details with your clinician. Uploaded document contents are not included.
+            </p>
+            <div class="visit-brief-status" id="visitBriefStatus" aria-live="polite"></div>
+            <div class="visit-brief-result" id="visitBriefResult"></div>
+        </section>
+
         <!-- ================= MAIN CONTENT GRID ================= -->
         <div class="content-grid">
             <!-- MEDICAL TIMELINE -->
@@ -2859,6 +3064,107 @@
         let patientTimelineCache = [];
 
         function getAuthToken() { return localStorage.getItem("access_token"); }
+
+        function renderVisitBrief(brief) {
+            const result = document.getElementById("visitBriefResult");
+            const status = document.getElementById("visitBriefStatus");
+            if (!result || !status) return;
+
+            const records = Array.isArray(brief.records) ? brief.records : [];
+            const medications = Array.isArray(brief.medications) ? brief.medications : [];
+            const questions = Array.isArray(brief.discussion_questions) ? brief.discussion_questions : [];
+            const recordItems = records.length
+                ? records.map(record => `
+                    <li>
+                        <strong>${escapeHtml(record.title || "Medical record")}</strong>
+                        <span> · ${escapeHtml(formatDate(record.record_date))}</span>
+                        ${record.diagnosis ? `<div>Recorded diagnosis: ${escapeHtml(record.diagnosis)}</div>` : ""}
+                        ${record.description ? `<div>${escapeHtml(record.description)}</div>` : ""}
+                        ${record.doctor_name ? `<div>Provider: ${escapeHtml(record.doctor_name)}</div>` : ""}
+                        <span class="visit-brief-source">${escapeHtml(record.source)}</span>
+                    </li>
+                `).join("")
+                : "<li>No medical records are saved yet.</li>";
+            const medicationItems = medications.length
+                ? medications.map(medication => `
+                    <li>
+                        <strong>${escapeHtml(medication.name)}</strong>
+                        ${medication.dosage ? `<span> · ${escapeHtml(medication.dosage)}</span>` : ""}
+                        ${medication.frequency ? `<div>${escapeHtml(medication.frequency)}</div>` : ""}
+                        <div>Date range: ${escapeHtml(formatDate(medication.start_date))} – ${escapeHtml(formatDate(medication.end_date))}</div>
+                        ${medication.doctor_name ? `<div>Prescriber entered: ${escapeHtml(medication.doctor_name)}</div>` : ""}
+                        <span class="visit-brief-source">${escapeHtml(medication.source)}</span>
+                    </li>
+                `).join("")
+                : "<li>No medication entries fall within their saved date range today.</li>";
+            const questionItems = questions.length
+                ? questions.map(question => `<li>${escapeHtml(question)}</li>`).join("")
+                : "<li>No discussion prompts available.</li>";
+
+            result.innerHTML = `
+                <div class="visit-brief-section">
+                    <h3>At a glance</h3>
+                    <p>${escapeHtml(brief.patient_name)} · ${Number(brief.record_count) || 0} saved record(s) · ${Number(brief.active_medication_count) || 0} medication entr${Number(brief.active_medication_count) === 1 ? "y" : "ies"} dated current</p>
+                    <p class="visit-brief-status">Created ${escapeHtml(formatDateTime(brief.generated_at))}. The medication date range does not confirm what you currently take.</p>
+                </div>
+                <div class="visit-brief-section">
+                    <h3>Recent medical records</h3>
+                    <ul class="visit-brief-list">${recordItems}</ul>
+                    ${brief.records_omitted ? `<p class="visit-brief-status">${Number(brief.records_omitted)} older record(s) omitted from this brief.</p>` : ""}
+                </div>
+                <div class="visit-brief-section">
+                    <h3>Medication entries dated current</h3>
+                    <ul class="visit-brief-list">${medicationItems}</ul>
+                    ${brief.medications_omitted ? `<p class="visit-brief-status">${Number(brief.medications_omitted)} additional medication entry/entries omitted.</p>` : ""}
+                </div>
+                <div class="visit-brief-section">
+                    <h3>Questions to discuss</h3>
+                    <ul class="visit-brief-list">${questionItems}</ul>
+                </div>
+                <p class="visit-brief-notice">${escapeHtml(brief.notice)}</p>
+                <button type="button" class="visit-brief-print" onclick="printVisitBrief()">
+                    <i class="fa-solid fa-print" aria-hidden="true"></i> Print / Save as PDF
+                </button>
+            `;
+            status.textContent = "Your brief is ready. Review the source labels and verify details with your clinician.";
+        }
+
+        function printVisitBrief() {
+            document.body.classList.add("printing-visit-brief");
+            window.print();
+            document.body.classList.remove("printing-visit-brief");
+        }
+
+        async function generateVisitBrief() {
+            const button = document.getElementById("generateVisitBriefButton");
+            const status = document.getElementById("visitBriefStatus");
+            const result = document.getElementById("visitBriefResult");
+            const token = getAuthToken();
+            if (!button || !status || !result) return;
+            if (!token) {
+                status.textContent = "Your session has expired. Please log in again to create your brief.";
+                return;
+            }
+
+            button.disabled = true;
+            status.textContent = "Preparing a brief from your saved records…";
+            result.innerHTML = "";
+            try {
+                const response = await fetch(`${API_BASE_URL}/api/visit-brief/`, {
+                    headers: { "Authorization": `Bearer ${token}` }
+                });
+                const data = await response.json();
+                if (!response.ok) {
+                    throw new Error(data.detail || "Unable to create your visit brief.");
+                }
+                renderVisitBrief(data);
+            } catch (error) {
+                console.error("Visit brief error:", error);
+                status.textContent = `Unable to create your visit brief: ${error.message}`;
+            } finally {
+                button.disabled = false;
+            }
+        }
 
         function applyDashboardRange(range) {
             currentDashboardRange = range;

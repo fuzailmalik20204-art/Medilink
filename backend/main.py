@@ -12,6 +12,7 @@ from routes.permissions import router as permission_router
 from routes.access_logs import router as access_logs_router
 from routes.documents import router as documents_router
 from routes.medications import router as medications_router
+from routes.visit_brief import router as visit_brief_router
 
 # =========================================================
 # CREATE FASTAPI APP
@@ -54,6 +55,7 @@ app.include_router(permission_router)
 app.include_router(access_logs_router)
 app.include_router(documents_router)
 app.include_router(medications_router)
+app.include_router(visit_brief_router)
 
 
 # =========================================================
