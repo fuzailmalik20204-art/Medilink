@@ -1,0 +1,18 @@
+# Local environment and credentials
+.env
+.env.*
+!.env.example
+
+# Python
+__pycache__/
+*.py[cod]
+backend/venv/
+venv/
+
+# Local databases and uploads
+*.db
+backend/uploads/
+
+# Local tooling
+.vscode/
+.idea/

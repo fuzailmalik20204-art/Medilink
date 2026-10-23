@@ -1,0 +1,2258 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MediLink | Healthcare Provider Dashboard</title>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@500;600;700;800&display=swap"
+        rel="stylesheet">
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
+    <!-- Word (.docx) Document In-Browser Preview Libraries -->
+    <script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/docx-preview@0.3.2/dist/docx-preview.min.js"></script>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: "Inter", sans-serif;
+            background: #f5f9fc;
+            color: #172b4d;
+        }
+
+        /* SIDEBAR */
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 250px;
+            height: 100vh;
+            background: #ffffff;
+            border-right: 1px solid #e5edf3;
+            padding: 25px 16px;
+            z-index: 1000;
+        }
+
+        .logo {
+            font-family: "Poppins", sans-serif;
+            font-size: 24px;
+            font-weight: 800;
+            color: #087f8c;
+            padding: 0 15px 30px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .menu-title {
+            font-size: 11px;
+            color: #9aa9b8;
+            font-weight: 700;
+            margin: 20px 15px 10px;
+            text-transform: uppercase;
+        }
+
+        .menu a {
+            display: flex;
+            align-items: center;
+            gap: 13px;
+            padding: 13px 15px;
+            margin-bottom: 5px;
+            text-decoration: none;
+            color: #64748b;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 500;
+            transition: .25s;
+            cursor: pointer;
+        }
+
+        .menu a:hover,
+        .menu a.active {
+            background: #e8f7f8;
+            color: #087f8c;
+        }
+
+        .logout {
+            position: absolute;
+            bottom: 25px;
+            left: 16px;
+            right: 16px;
+        }
+
+        .logout a {
+            color: #ef4444;
+        }
+
+        /* MAIN CONTENT */
+        .main {
+            margin-left: 250px;
+            padding: 28px 35px;
+        }
+
+        .topbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .view-filters {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 18px;
+        }
+
+        .view-filter-btn {
+            border: 1px solid #dfeaf3;
+            background: white;
+            color: #4b5d75;
+            padding: 8px 12px;
+            border-radius: 999px;
+            font-size: 12px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .view-filter-btn.active {
+            background: #0d7b86;
+            border-color: #0d7b86;
+            color: white;
+            box-shadow: 0 8px 18px rgba(13, 123, 134, 0.2);
+        }
+
+        .welcome h1 {
+            font-family: "Poppins", sans-serif;
+            font-size: 26px;
+            margin-bottom: 5px;
+        }
+
+        .welcome p {
+            color: #7b8a9a;
+            font-size: 14px;
+        }
+
+        /* DOCTOR ID BADGE & DP */
+        .doctor-badge-box {
+            background: #e6f6f7;
+            border: 1px solid #b8e8eb;
+            padding: 10px 16px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .doctor-badge-box:hover {
+            background: #d9f3f5;
+        }
+
+        .doctor-badge-box span {
+            font-size: 11px;
+            color: #64748b;
+            text-transform: uppercase;
+            font-weight: 700;
+        }
+
+        .doctor-badge-box strong {
+            font-size: 15px;
+            color: #087f8c;
+            font-family: monospace;
+        }
+
+        .doctor-avatar-circle {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid #087f8c;
+            cursor: pointer;
+            box-shadow: 0 2px 8px rgba(8, 127, 140, 0.15);
+        }
+
+        /* STATS */
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 18px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: white;
+            border: 1px solid #e5edf3;
+            border-radius: 15px;
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .stat-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #e8f7f8;
+            color: #087f8c;
+            font-size: 20px;
+        }
+
+        /* CARDS & TABLES */
+        .card {
+            background: white;
+            border: 1px solid #e5edf3;
+            border-radius: 16px;
+            padding: 25px;
+            margin-bottom: 25px;
+        }
+
+        .section-heading {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .section-heading h2 {
+            font-size: 20px;
+            font-family: "Poppins", sans-serif;
+        }
+
+        .patient-card {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px;
+            border: 1px solid #e9edf2;
+            border-radius: 12px;
+            margin-bottom: 12px;
+            transition: .2s;
+        }
+
+        .patient-card:hover {
+            border-color: #087f8c;
+            box-shadow: 0 4px 15px rgba(8, 127, 140, 0.08);
+        }
+
+        .patient-info {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .patient-avatar {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background: #e8f7f8;
+            color: #087f8c;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+        }
+
+        .badges-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-top: 6px;
+        }
+
+        .badge {
+            font-size: 11px;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-weight: 600;
+        }
+
+        .badge.active {
+            background: #dcfce7;
+            color: #15803d;
+        }
+
+        .badge.view-only {
+            background: #e0f2fe;
+            color: #0369a1;
+        }
+
+        .badge.inactive {
+            background: #fee2e2;
+            color: #b91c1c;
+            opacity: 0.6;
+        }
+
+        .view-btn {
+            background: #087f8c;
+            color: white;
+            border: none;
+            padding: 9px 15px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 13px;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .view-btn:hover {
+            background: #066974;
+        }
+
+        /* DATA TABLES FOR MASTER VIEWS */
+        .master-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+            font-size: 13px;
+        }
+
+        .master-table th {
+            text-align: left;
+            padding: 12px 14px;
+            background: #f8fafc;
+            color: #64748b;
+            font-weight: 600;
+            border-bottom: 1px solid #e2e8f0;
+            text-transform: uppercase;
+            font-size: 11px;
+        }
+
+        .master-table td {
+            padding: 14px;
+            border-bottom: 1px solid #f1f5f9;
+            color: #1e293b;
+            vertical-align: middle;
+        }
+
+        .master-table tr:hover td {
+            background: #fbfdff;
+        }
+
+        /* MODAL STYLES */
+        .modal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(15, 23, 42, 0.6);
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            padding: 20px;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 16px;
+            width: 100%;
+            max-width: 860px;
+            max-height: 88vh;
+            overflow-y: auto;
+            padding: 25px;
+            position: relative;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .close-btn {
+            background: #f1f5f9;
+            border: none;
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 18px;
+            color: #64748b;
+        }
+
+        .close-btn:hover {
+            background: #e2e8f0;
+            color: #0f172a;
+        }
+
+        .tab-nav {
+            display: flex;
+            gap: 10px;
+            border-bottom: 1px solid #e2e8f0;
+            margin-bottom: 20px;
+        }
+
+        .tab-btn {
+            background: none;
+            border: none;
+            padding: 10px 15px;
+            font-size: 14px;
+            cursor: pointer;
+            font-weight: 600;
+            color: #64748b;
+        }
+
+        .tab-btn.active {
+            color: #087f8c;
+            border-bottom: 2px solid #087f8c;
+        }
+
+        .tab-toolbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding: 6px 0;
+            border-bottom: 1px dashed #e2e8f0;
+        }
+
+        .data-item {
+            padding: 16px;
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+            margin-bottom: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 15px;
+        }
+
+        .data-content {
+            flex: 1;
+        }
+
+        .data-actions {
+            display: flex;
+            gap: 8px;
+            flex-shrink: 0;
+            align-items: center;
+        }
+
+        .btn-action {
+            background: #f1f5f9;
+            color: #334155;
+            border: 1px solid #cbd5e1;
+            padding: 7px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            text-decoration: none;
+            transition: .15s ease-in-out;
+        }
+
+        .btn-action:hover {
+            background: #e2e8f0;
+            color: #0f172a;
+        }
+
+        .btn-action.btn-edit {
+            background: #e8f7f8;
+            color: #087f8c;
+            border-color: #b8e8eb;
+        }
+
+        .btn-action.btn-edit:hover {
+            background: #087f8c;
+            color: white;
+        }
+
+        .btn-action.btn-view-doc {
+            background: #eff6ff;
+            color: #2563eb;
+            border-color: #bfdbfe;
+        }
+
+        .btn-action.btn-view-doc:hover {
+            background: #2563eb;
+            color: white;
+        }
+
+        .view-only-badge {
+            font-size: 11px;
+            font-weight: 600;
+            color: #64748b;
+            background: #f1f5f9;
+            padding: 6px 10px;
+            border-radius: 6px;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            border: 1px solid #e2e8f0;
+        }
+
+        /* LIVE SEARCH DROPDOWNS */
+        .search-results-dropdown {
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            max-height: 180px;
+            overflow-y: auto;
+            background: white;
+            margin-top: 4px;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+            display: none;
+            position: absolute;
+            left: 0;
+            right: 0;
+            z-index: 10002;
+        }
+
+        .search-result-item {
+            padding: 10px 14px;
+            cursor: pointer;
+            border-bottom: 1px solid #f1f5f9;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .search-result-item:hover {
+            background: #f0fdfa;
+            color: #087f8c;
+        }
+
+        /* FORM CONTROLS FOR MODALS */
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            margin-bottom: 6px;
+            color: #334155;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid #cbd5e1;
+            border-radius: 8px;
+            font-size: 14px;
+            font-family: inherit;
+            outline: none;
+            transition: border-color .2s;
+        }
+
+        .form-control:focus {
+            border-color: #087f8c;
+            box-shadow: 0 0 0 3px rgba(8, 127, 140, 0.15);
+        }
+
+        textarea.form-control {
+            resize: vertical;
+            min-height: 75px;
+        }
+
+        .modal-footer {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .btn-cancel {
+            background: #f1f5f9;
+            color: #475569;
+            border: none;
+            padding: 10px 16px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .btn-save {
+            background: #087f8c;
+            color: white;
+            border: none;
+            padding: 10px 18px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .btn-save:hover {
+            background: #066974;
+        }
+
+        @media (max-width: 1100px) {
+            .main {
+                padding: 24px;
+            }
+
+            .stats {
+                gap: 12px;
+            }
+
+            .stat-card {
+                padding: 16px;
+                gap: 10px;
+            }
+
+            .topbar {
+                align-items: flex-start;
+                gap: 16px;
+            }
+
+            .topbar > div:last-child {
+                flex-wrap: wrap;
+                justify-content: flex-end;
+            }
+        }
+
+        @media (max-width: 850px) {
+            .sidebar {
+                position: sticky;
+                top: 0;
+                width: 100%;
+                height: auto;
+                min-height: 68px;
+                padding: 10px 18px;
+                display: flex;
+                align-items: center;
+                gap: 14px;
+                border-right: 0;
+                border-bottom: 1px solid #e5edf3;
+            }
+
+            .logo {
+                flex: 0 0 auto;
+                padding: 0;
+                font-size: 20px;
+            }
+
+            .menu-title {
+                display: none;
+            }
+
+            .menu {
+                display: flex;
+                align-items: center;
+                gap: 4px;
+                min-width: 0;
+            }
+
+            .menu a {
+                margin: 0;
+                padding: 10px 12px;
+                white-space: nowrap;
+            }
+
+            .logout {
+                position: static;
+                margin-left: auto;
+                flex: 0 0 auto;
+            }
+
+            .logout a {
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                padding: 10px;
+                text-decoration: none;
+            }
+
+            .main {
+                margin-left: 0;
+                padding: 24px;
+            }
+
+            .stats {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+
+            .stats .stat-card:last-child {
+                grid-column: 1 / -1;
+            }
+        }
+
+        @media (max-width: 600px) {
+            .sidebar {
+                min-height: 58px;
+                gap: 8px;
+                padding: 8px 10px;
+            }
+
+            .logo {
+                gap: 6px;
+                font-size: 16px;
+            }
+
+            .menu {
+                flex: 1;
+                justify-content: flex-end;
+                gap: 2px;
+            }
+
+            .menu a {
+                justify-content: center;
+                width: 38px;
+                height: 38px;
+                padding: 8px;
+                font-size: 0;
+            }
+
+            .menu a i {
+                font-size: 16px;
+            }
+
+            .logout a {
+                justify-content: center;
+                width: 36px;
+                height: 38px;
+                padding: 8px;
+                font-size: 0;
+            }
+
+            .logout a i {
+                font-size: 16px;
+            }
+
+            .main {
+                padding: 18px 14px;
+            }
+
+            .topbar {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 14px;
+            }
+
+            .welcome h1 {
+                font-size: 22px;
+                line-height: 1.3;
+            }
+
+            .welcome p {
+                font-size: 13px;
+                line-height: 1.5;
+            }
+
+            .topbar > div:last-child {
+                justify-content: flex-start;
+                gap: 8px !important;
+            }
+
+            .topbar > div:last-child > .view-btn {
+                flex: 1 1 100%;
+                justify-content: center;
+            }
+
+            .doctor-badge-box {
+                flex: 1;
+                min-width: 0;
+                padding: 8px 10px;
+            }
+
+            .doctor-avatar-circle {
+                flex: 0 0 auto;
+            }
+
+            .view-filters {
+                gap: 6px;
+                margin-bottom: 14px;
+            }
+
+            .view-filter-btn {
+                flex: 1 1 auto;
+                padding: 8px 9px;
+                font-size: 11px;
+            }
+
+            .stats {
+                grid-template-columns: 1fr;
+                gap: 10px;
+                margin-bottom: 18px;
+            }
+
+            .stats .stat-card:last-child {
+                grid-column: auto;
+            }
+
+            .stat-card {
+                padding: 14px;
+            }
+
+            .card {
+                padding: 16px;
+                margin-bottom: 16px;
+                border-radius: 12px;
+            }
+
+            .section-heading {
+                align-items: flex-start;
+                flex-direction: column;
+                gap: 10px;
+                margin-bottom: 14px;
+            }
+
+            .section-heading h2 {
+                font-size: 18px;
+            }
+
+            .section-heading > small {
+                line-height: 1.5;
+            }
+
+            #recordSearchInput,
+            #prescriptionSearchInput {
+                width: 100% !important;
+            }
+
+            .patient-card {
+                align-items: flex-start;
+                flex-direction: column;
+                gap: 12px;
+                padding: 13px;
+            }
+
+            .patient-info {
+                min-width: 0;
+                gap: 10px;
+            }
+
+            .patient-info > div:last-child {
+                min-width: 0;
+                overflow-wrap: anywhere;
+            }
+
+            .patient-card > .view-btn {
+                align-self: stretch;
+                justify-content: center;
+            }
+
+            #allRecordsTableContainer,
+            #allPrescriptionsTableContainer {
+                max-width: 100%;
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
+            }
+
+            .master-table {
+                min-width: 620px;
+            }
+
+            .modal {
+                align-items: flex-end;
+                padding: 8px;
+            }
+
+            .modal-content {
+                max-height: 94vh;
+                padding: 18px;
+                border-radius: 14px;
+            }
+
+            .modal-header {
+                align-items: flex-start;
+                gap: 10px;
+            }
+
+            .modal-header h3 {
+                font-size: 17px;
+                line-height: 1.4;
+            }
+
+            .form-row,
+            .modal-content form > div[style*="grid-template-columns"] {
+                grid-template-columns: 1fr !important;
+                gap: 0 !important;
+            }
+
+            .tab-nav {
+                overflow-x: auto;
+                gap: 4px;
+                margin-right: -4px;
+                -webkit-overflow-scrolling: touch;
+            }
+
+            .tab-btn {
+                flex: 0 0 auto;
+                padding: 10px;
+                font-size: 13px;
+                white-space: nowrap;
+            }
+
+            .tab-toolbar {
+                align-items: flex-start;
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .data-item {
+                flex-direction: column;
+                gap: 12px;
+                padding: 13px;
+            }
+
+            .data-content {
+                min-width: 0;
+                overflow-wrap: anywhere;
+            }
+
+            .data-actions {
+                flex-wrap: wrap;
+            }
+
+            .modal-footer {
+                flex-wrap: wrap;
+            }
+
+            .modal-footer button {
+                flex: 1 1 auto;
+            }
+        }
+
+        @media (max-width: 360px) {
+            .logo {
+                font-size: 0;
+            }
+
+            .logo i {
+                font-size: 20px;
+            }
+
+            .view-filter-btn {
+                font-size: 10px;
+                padding: 8px 6px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+        <div class="logo">
+            <i class="fa-solid fa-heart-pulse"></i>
+            MediLink
+        </div>
+
+        <div class="menu-title">Main</div>
+        <nav class="menu">
+            <a href="javascript:void(0)" onclick="switchMainView('patients')" id="navPatients" class="active"
+                aria-label="Patients" title="Patients">
+                <i class="fa-solid fa-user-doctor"></i> <span>Patients</span>
+            </a>
+            <a href="javascript:void(0)" onclick="switchMainView('records')" id="navRecords"
+                aria-label="Medical Records" title="Medical Records">
+                <i class="fa-solid fa-file-medical"></i> <span>Medical Records</span>
+            </a>
+            <a href="javascript:void(0)" onclick="switchMainView('prescriptions')" id="navPrescriptions"
+                aria-label="Prescriptions" title="Prescriptions">
+                <i class="fa-solid fa-pills"></i> <span>Prescriptions</span>
+            </a>
+        </nav>
+
+        <div class="logout">
+            <a href="login.html" onclick="localStorage.clear();" aria-label="Logout" title="Logout"><i class="fa-solid fa-right-from-bracket"></i>
+                <span>Logout</span></a>
+        </div>
+    </aside>
+
+    <!-- MAIN -->
+    <main class="main">
+        <div class="topbar">
+            <div class="welcome">
+                <h1 id="viewTitle">Welcome, Doctor 👋</h1>
+                <p id="viewSubtitle">Manage your authorized patients and their health records.</p>
+            </div>
+
+            <!-- Topbar Actions with DP and ID customization triggers -->
+            <div style="display:flex; align-items:center; gap:14px;">
+                <button type="button" class="view-btn" onclick="openRequestAccessModal()">
+                    <i class="fa-solid fa-user-plus"></i> Request Patient Access
+                </button>
+                <div class="doctor-badge-box" onclick="openDoctorProfileModal()"
+                    title="Click to customize Doctor ID & profile">
+                    <div>
+                        <span>Your Doctor ID</span>
+                        <br>
+                        <strong id="displayDoctorId">Loading...</strong>
+                    </div>
+                    <i class="fa-solid fa-pen-to-square" style="color:#087f8c; font-size:12px;"></i>
+                </div>
+                <img id="doctorAvatarImg" class="doctor-avatar-circle" onclick="openDoctorProfileModal()"
+                    title="Click to customize Doctor DP & details">
+            </div>
+        </div>
+
+        <div class="view-filters" aria-label="Doctor patient filters">
+            <button type="button" class="view-filter-btn active" data-filter="all" onclick="applyDoctorPatientFilter('all')">All access</button>
+            <button type="button" class="view-filter-btn" data-filter="priority" onclick="applyDoctorPatientFilter('priority')">Full edit access</button>
+            <button type="button" class="view-filter-btn" data-filter="standard" onclick="applyDoctorPatientFilter('standard')">View-only access</button>
+        </div>
+
+        <!-- VIEW 1: PATIENTS (DEFAULT) -->
+        <div id="viewPatients" class="dashboard-view">
+            <div class="stats">
+                <div class="stat-card">
+                    <div class="stat-icon"><i class="fa-solid fa-users"></i></div>
+                    <div>
+                        <h3 id="authorizedPatientsCount">0</h3>
+                        <p>Authorized Patients</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon"><i class="fa-solid fa-shield-halved"></i></div>
+                    <div>
+                        <h3>Active</h3>
+                        <p>Permission Status</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon"><i class="fa-solid fa-hospital"></i></div>
+                    <div>
+                        <h3 id="displayHospital">MediLink</h3>
+                        <p>Hospital Network</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="section-heading">
+                    <h2>Patients Who Granted Access</h2>
+                    <small style="color: #64748b;">Share your Doctor ID or request access using the button above</small>
+                </div>
+                <div id="authorizedPatientsList">
+                    <p style="color: #64748b;"><i class="fa-solid fa-spinner fa-spin"></i> Loading patients...</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- VIEW 2: MASTER MEDICAL RECORDS -->
+        <div id="viewRecords" class="dashboard-view" style="display: none;">
+            <div class="card">
+                <div class="section-heading">
+                    <div>
+                        <h2>All Medical Records</h2>
+                        <small style="color: #64748b;">Review consultation history and diagnosis across all authorized
+                            patients</small>
+                    </div>
+                    <div style="display: flex; gap: 10px;">
+                        <input type="text" id="recordSearchInput" oninput="filterRecordsTable()"
+                            placeholder="Search title, diagnosis, patient..." class="form-control"
+                            style="width: 280px; padding: 8px 12px; font-size: 13px;">
+                    </div>
+                </div>
+                <div id="allRecordsTableContainer" style="overflow-x: auto;">
+                    <p style="color: #64748b;"><i class="fa-solid fa-spinner fa-spin"></i> Loading records...</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- VIEW 3: MASTER PRESCRIPTIONS -->
+        <div id="viewPrescriptions" class="dashboard-view" style="display: none;">
+            <div class="card">
+                <div class="section-heading">
+                    <div>
+                        <h2>Prescriptions & Medications</h2>
+                        <small style="color: #64748b;">Master list of all medications prescribed across your authorized
+                            patients</small>
+                    </div>
+                    <div style="display: flex; gap: 10px;">
+                        <input type="text" id="prescriptionSearchInput" oninput="filterPrescriptionsTable()"
+                            placeholder="Search drug, dosage, patient..." class="form-control"
+                            style="width: 280px; padding: 8px 12px; font-size: 13px;">
+                    </div>
+                </div>
+                <div id="allPrescriptionsTableContainer" style="overflow-x: auto;">
+                    <p style="color: #64748b;"><i class="fa-solid fa-spinner fa-spin"></i> Loading prescriptions...</p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- CUSTOMIZE DOCTOR PROFILE, ID & DP (DEVICE UPLOAD) MODAL -->
+    <div id="doctorProfileModal" class="modal">
+        <div class="modal-content" style="max-width: 520px;">
+            <div class="modal-header">
+                <h3>Customize Doctor Profile & DP</h3>
+                <button type="button" class="close-btn" onclick="closeDoctorProfileModal()">×</button>
+            </div>
+            <form onsubmit="handleSaveDoctorProfile(event)">
+                <!-- DEVICE DP UPLOAD -->
+                <div style="text-align: center; margin-bottom: 20px;">
+                    <div style="position: relative; display: inline-block;">
+                        <img id="docPreviewAvatar"
+                            style="width: 82px; height: 82px; border-radius: 50%; object-fit: cover; border: 3px solid #087f8c; box-shadow: 0 4px 12px rgba(8,127,140,0.15);">
+                        <label for="docAvatarFileInput"
+                            style="position: absolute; bottom: 0; right: 0; background: #087f8c; color: white; width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; border: 2px solid white;"
+                            title="Upload photo from device">
+                            <i class="fa-solid fa-camera" style="font-size: 13px;"></i>
+                        </label>
+                        <input type="file" id="docAvatarFileInput" accept="image/*" style="display: none;"
+                            onchange="handleDoctorAvatarUpload(this)">
+                    </div>
+                    <div style="margin-top: 10px; display: flex; justify-content: center; gap: 8px;">
+                        <button type="button" onclick="document.getElementById('docAvatarFileInput').click()"
+                            class="btn-action" style="font-size: 11px; padding: 5px 10px;">
+                            <i class="fa-solid fa-upload"></i> Upload From Device
+                        </button>
+                        <button type="button" onclick="removeDoctorAvatar()" class="btn-action"
+                            style="font-size: 11px; padding: 5px 10px; color: #dc2626;">
+                            <i class="fa-solid fa-trash"></i> Remove
+                        </button>
+                    </div>
+                </div>
+
+                <div class="form-group"><label class="form-label">Doctor Name</label><input type="text"
+                        id="docNameInput" class="form-control" required></div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Doctor Code / ID (Customizable)</label>
+                        <input type="text" id="docCodeInput" class="form-control"
+                            placeholder="e.g. DOC-00001 or DR-SMITH-01" required>
+                    </div>
+                    <div class="form-group"><label class="form-label">Specialization</label><input type="text"
+                            id="docSpecInput" class="form-control" placeholder="e.g. Cardiology"></div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group"><label class="form-label">Hospital Network</label><input type="text"
+                            id="docHospInput" class="form-control"></div>
+                    <div class="form-group"><label class="form-label">Phone</label><input type="text" id="docPhoneInput"
+                            class="form-control"></div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn-cancel" onclick="closeDoctorProfileModal()">Cancel</button>
+                    <button type="submit" class="btn-save">Save Profile & ID</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- REQUEST ACCESS MODAL (PATIENT SEARCH BY NAME OR ID) -->
+    <div id="requestAccessModal" class="modal">
+        <div class="modal-content" style="max-width: 520px;">
+            <div class="modal-header">
+                <h3><i class="fa-solid fa-user-plus" style="color:#087f8c; margin-right:6px;"></i> Request Patient
+                    Access</h3>
+                <button type="button" class="close-btn" onclick="closeRequestAccessModal()">×</button>
+            </div>
+            <form id="requestAccessForm" onsubmit="handleSendAccessRequest(event)">
+                <div class="form-group" style="position: relative;">
+                    <label class="form-label">Find Patient (Search by Name or Patient Code / ID)</label>
+                    <div
+                        style="display:flex; align-items:center; border:1px solid #cbd5e1; border-radius:8px; padding:0 10px; background:white;">
+                        <i class="fa-solid fa-magnifying-glass" style="color:#94a3b8; margin-right:8px;"></i>
+                        <input type="text" id="patientLiveSearchInput" oninput="handleLivePatientSearch(this.value)"
+                            placeholder="Type patient name (e.g. John) or ID (PAT-00001)..."
+                            style="width:100%; border:none; padding:10px 0; outline:none; font-size:13px;">
+                    </div>
+                    <div id="patientSearchResults" class="search-results-dropdown"></div>
+
+                    <div id="selectedPatientCard"
+                        style="display:none; margin-top:10px; padding:10px 14px; background:#eff6ff; border:1px solid #bfdbfe; border-radius:8px;">
+                        <div style="display:flex; justify-content:space-between; align-items:center;">
+                            <div>
+                                <strong id="selectedPatientName" style="color:#1e40af; font-size:14px;"></strong>
+                                <small id="selectedPatientDetails"
+                                    style="display:block; color:#60a5fa; font-size:12px;"></small>
+                            </div>
+                            <button type="button" onclick="clearSelectedPatient()"
+                                style="border:none; background:none; color:#ef4444; font-size:12px; cursor:pointer;">Change</button>
+                        </div>
+                    </div>
+                    <input type="hidden" id="reqPatientCode">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="reqMessage">Consultation Reason / Note</label>
+                    <input type="text" id="reqMessage" class="form-control"
+                        placeholder="e.g. Consultation review and history">
+                </div>
+
+                <div
+                    style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:8px; padding:14px; margin-bottom:15px; font-size:13px;">
+                    <label style="font-weight:700; color:#475569; display:block; margin-bottom:6px;">Permissions
+                        Requested</label>
+                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
+                        <label><input type="checkbox" id="reqVRec" checked> View Records</label>
+                        <label><input type="checkbox" id="reqERec"> Edit Records</label>
+                        <label><input type="checkbox" id="reqVMeds" checked> View Meds</label>
+                        <label><input type="checkbox" id="reqEMeds"> Prescribe Meds</label>
+                        <label><input type="checkbox" id="reqVDocs" checked> View Docs</label>
+                        <label><input type="checkbox" id="reqEDocs"> Manage Docs</label>
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn-cancel" onclick="closeRequestAccessModal()">Cancel</button>
+                    <button type="submit" class="btn-save" id="sendRequestSubmitBtn">
+                        <i class="fa-solid fa-paper-plane"></i> Send Request
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- PATIENT DETAILS MODAL -->
+    <div id="patientDetailsModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div>
+                    <h2 id="modalPatientName">Patient Details</h2>
+                    <small id="modalPatientCode" style="color: #64748b;"></small>
+                </div>
+                <button type="button" class="close-btn" onclick="closePatientModal()">×</button>
+            </div>
+
+            <div class="tab-nav">
+                <button type="button" class="tab-btn active" data-tab="records"
+                    onclick="switchTab('records', this)">Records</button>
+                <button type="button" class="tab-btn" data-tab="medications"
+                    onclick="switchTab('medications', this)">Medications</button>
+                <button type="button" class="tab-btn" data-tab="documents"
+                    onclick="switchTab('documents', this)">Documents</button>
+            </div>
+
+            <div id="modalDataContent"></div>
+        </div>
+    </div>
+
+    <!-- DOCUMENT PREVIEW MODAL -->
+    <div id="documentPreviewModal" class="modal" style="z-index: 10001;">
+        <div class="modal-content" style="max-width: 880px; height: 86vh; display: flex; flex-direction: column;">
+            <div class="modal-header">
+                <div>
+                    <h3 id="previewDocTitle">Document Preview</h3>
+                    <small id="previewDocSub" style="color: #64748b;"></small>
+                </div>
+                <div style="display:flex; align-items:center; gap: 8px;">
+                    <button id="previewDownloadBtn" class="btn-action" type="button">
+                        <i class="fa-solid fa-download"></i> Download
+                    </button>
+                    <button type="button" class="close-btn" onclick="closeDocPreviewModal()">×</button>
+                </div>
+            </div>
+            <div id="previewDocFrameContainer"
+                style="flex: 1; border: 1px solid #e2e8f0; border-radius: 8px; overflow: hidden; background: #f8fafc; display: flex; align-items: center; justify-content: center;">
+            </div>
+        </div>
+    </div>
+
+    <!-- CREATE & EDIT RECORD MODALS -->
+    <div id="createRecordModal" class="modal" style="z-index: 10001;">
+        <div class="modal-content" style="max-width: 600px;">
+            <div class="modal-header">
+                <h3>Add Consultation Record</h3><button type="button" class="close-btn"
+                    onclick="closeCreateRecordModal()">×</button>
+            </div>
+            <form id="createRecordForm" onsubmit="handleCreateRecord(event)">
+                <div class="form-group"><label class="form-label">Record Title</label><input type="text"
+                        id="createRecordTitle" class="form-control" required placeholder="e.g. Clinical Follow-up">
+                </div>
+                <div class="form-group"><label class="form-label">Diagnosis</label><textarea id="createRecordDiagnosis"
+                        class="form-control" rows="2" placeholder="Clinical findings..."></textarea></div>
+                <div class="form-group"><label class="form-label">Consultation Date</label><input type="date"
+                        id="createRecordDate" class="form-control" required></div>
+                <div class="form-group"><label class="form-label">Clinical Notes</label><textarea
+                        id="createRecordDescription" class="form-control" rows="3"
+                        placeholder="Treatment plan..."></textarea></div>
+                <div class="modal-footer"><button type="button" class="btn-cancel"
+                        onclick="closeCreateRecordModal()">Cancel</button><button type="submit" class="btn-save"
+                        id="createRecordSubmitBtn">Add Record</button></div>
+            </form>
+        </div>
+    </div>
+
+    <div id="editRecordModal" class="modal" style="z-index: 10001;">
+        <div class="modal-content" style="max-width: 600px;">
+            <div class="modal-header">
+                <h3>Edit Medical Record</h3><button type="button" class="close-btn"
+                    onclick="closeEditRecordModal()">×</button>
+            </div>
+            <form id="editRecordForm" onsubmit="handleSaveRecord(event)">
+                <input type="hidden" id="editRecordId">
+                <div class="form-group"><label class="form-label">Title</label><input type="text" id="editRecordTitle"
+                        class="form-control" required></div>
+                <div class="form-group"><label class="form-label">Diagnosis</label><textarea id="editRecordDiagnosis"
+                        class="form-control" rows="2"></textarea></div>
+                <div class="form-group"><label class="form-label">Date</label><input type="date" id="editRecordDate"
+                        class="form-control" required></div>
+                <div class="form-group"><label class="form-label">Clinical Notes</label><textarea id="editRecordNotes"
+                        class="form-control" rows="3"></textarea></div>
+                <div class="modal-footer"><button type="button" class="btn-cancel"
+                        onclick="closeEditRecordModal()">Cancel</button><button type="submit" class="btn-save"
+                        id="saveRecordSubmitBtn">Save Changes</button></div>
+            </form>
+        </div>
+    </div>
+
+    <!-- PRESCRIBE & EDIT MEDICATION MODALS -->
+    <div id="createMedicationModal" class="modal" style="z-index: 10001;">
+        <div class="modal-content" style="max-width: 620px;">
+            <div class="modal-header">
+                <h3>Prescribe New Medication</h3><button type="button" class="close-btn"
+                    onclick="closeCreateMedModal()">×</button>
+            </div>
+            <form id="createMedicationForm" onsubmit="handleCreateMedication(event)">
+                <div class="form-group"><label class="form-label">Medication Name</label><input type="text"
+                        id="createMedName" class="form-control" required placeholder="e.g. Amoxicillin"></div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                    <div class="form-group"><label class="form-label">Dosage</label><input type="text"
+                            id="createMedDosage" class="form-control"></div>
+                    <div class="form-group"><label class="form-label">Frequency</label><input type="text"
+                            id="createMedFrequency" class="form-control"></div>
+                </div>
+                <div class="form-group"><label class="form-label">Duration</label><input type="text"
+                        id="createMedDuration" class="form-control"></div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                    <div class="form-group"><label class="form-label">Start Date</label><input type="date"
+                            id="createMedStartDate" class="form-control"></div>
+                    <div class="form-group"><label class="form-label">End Date</label><input type="date"
+                            id="createMedEndDate" class="form-control"></div>
+                </div>
+                <div class="form-group"><label class="form-label">Instructions / Notes</label><textarea
+                        id="createMedNotes" class="form-control" rows="2"></textarea></div>
+                <div class="modal-footer"><button type="button" class="btn-cancel"
+                        onclick="closeCreateMedModal()">Cancel</button><button type="submit" class="btn-save"
+                        id="createMedSubmitBtn">Prescribe</button></div>
+            </form>
+        </div>
+    </div>
+
+    <div id="editMedicationModal" class="modal" style="z-index: 10001;">
+        <div class="modal-content" style="max-width: 620px;">
+            <div class="modal-header">
+                <h3>Edit Medication</h3><button type="button" class="close-btn"
+                    onclick="closeEditMedicationModal()">×</button>
+            </div>
+            <form id="editMedicationForm" onsubmit="handleSaveMedication(event)">
+                <input type="hidden" id="editMedicationId">
+                <div class="form-group"><label class="form-label">Medication Name</label><input type="text"
+                        id="editMedName" class="form-control" required></div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                    <div class="form-group"><label class="form-label">Dosage</label><input type="text"
+                            id="editMedDosage" class="form-control"></div>
+                    <div class="form-group"><label class="form-label">Frequency</label><input type="text"
+                            id="editMedFrequency" class="form-control"></div>
+                </div>
+                <div class="form-group"><label class="form-label">Duration</label><input type="text"
+                        id="editMedDuration" class="form-control"></div>
+                <div class="form-group"><label class="form-label">Notes</label><textarea id="editMedNotes"
+                        class="form-control" rows="2"></textarea></div>
+                <div class="modal-footer"><button type="button" class="btn-cancel"
+                        onclick="closeEditMedicationModal()">Cancel</button><button type="submit" class="btn-save"
+                        id="saveMedSubmitBtn">Save Medication</button></div>
+            </form>
+        </div>
+    </div>
+
+    <!-- JAVASCRIPT -->
+    <script src="config.js"></script>
+    <script>
+        const API_BASE_URL = window.MEDILINK_API_BASE_URL || `${window.location.protocol}//${window.location.hostname}:8000`;
+        let currentPatientId = null;
+        let currentPermissions = {};
+        let cachedRecords = [];
+        let cachedMedications = [];
+
+        let allMasterRecords = [];
+        let allMasterPrescriptions = [];
+        let currentDoctorProfile = {};
+        let currentDoctorFilter = "all";
+
+        function getAuthToken() { return localStorage.getItem("access_token"); }
+
+        function getDoctorAccessState(patient) {
+            const hasEdit = [
+                Boolean(patient.can_edit_records),
+                Boolean(patient.can_edit_medications),
+                Boolean(patient.can_edit_documents)
+            ].some(Boolean);
+
+            const hasView = [
+                Boolean(patient.can_view_records),
+                Boolean(patient.can_view_medications),
+                Boolean(patient.can_view_documents)
+            ].some(Boolean);
+
+            if (hasEdit) return "priority";
+            if (hasView) return "standard";
+            return "none";
+        }
+
+        function applyDoctorPatientFilter(filter) {
+            currentDoctorFilter = filter;
+            document.querySelectorAll(".view-filter-btn").forEach(button => {
+                button.classList.toggle("active", button.dataset.filter === filter);
+            });
+
+            const patientCards = document.querySelectorAll("#authorizedPatientsList .patient-card");
+            let visibleCount = 0;
+
+            patientCards.forEach(card => {
+                const match = filter === "all" || card.dataset.accessState === filter;
+                card.style.display = match ? "flex" : "none";
+                if (match) visibleCount += 1;
+            });
+
+            const emptyState = document.getElementById("patientFilterEmptyState");
+            if (emptyState) {
+                emptyState.style.display = visibleCount === 0 ? "block" : "none";
+            }
+        }
+
+        // ==========================================
+        // SIDEBAR VIEW SWITCHING
+        // ==========================================
+        function switchMainView(view) {
+            document.querySelectorAll(".menu a").forEach(a => a.classList.remove("active"));
+            document.querySelectorAll(".dashboard-view").forEach(v => v.style.display = "none");
+
+            if (view === 'patients') {
+                document.getElementById("navPatients").classList.add("active");
+                document.getElementById("viewPatients").style.display = "block";
+                document.getElementById("viewTitle").textContent = "Welcome, Doctor 👋";
+                document.getElementById("viewSubtitle").textContent = "Manage your authorized patients and their health records.";
+                loadAuthorizedPatients();
+            } else if (view === 'records') {
+                document.getElementById("navRecords").classList.add("active");
+                document.getElementById("viewRecords").style.display = "block";
+                document.getElementById("viewTitle").textContent = "Medical Records Directory";
+                document.getElementById("viewSubtitle").textContent = "Review all consultation records across your authorized patients.";
+                loadAllMasterRecords();
+            } else if (view === 'prescriptions') {
+                document.getElementById("navPrescriptions").classList.add("active");
+                document.getElementById("viewPrescriptions").style.display = "block";
+                document.getElementById("viewTitle").textContent = "Prescriptions Directory";
+                document.getElementById("viewSubtitle").textContent = "Manage all active and past prescribed medications.";
+                loadAllMasterPrescriptions();
+            }
+        }
+
+        // ==========================================
+        // DOCTOR INITIALIZATION (NULL-SAFE)
+        // ==========================================
+        async function initDoctorDashboard() {
+            const token = getAuthToken();
+            if (!token) return (window.location.href = "login.html");
+
+            try {
+                const profileRes = await fetch(`${API_BASE_URL}/api/doctors/me`, {
+                    headers: { "Authorization": `Bearer ${token}` }
+                });
+
+                if (!profileRes.ok) return (window.location.href = "login.html");
+
+                const doc = await profileRes.json();
+                currentDoctorProfile = doc;
+
+                const localDp = localStorage.getItem("doctor_avatar");
+                updateDoctorUI(doc.name, doc.doctor_code, doc.hospital, localDp);
+
+                // Run patient loader immediately on load
+                await loadAuthorizedPatients();
+            } catch (err) {
+                console.error("Dashboard init error:", err);
+            }
+        }
+
+        // ==========================================
+        // DOCTOR PROFILE & DEVICE-BASED DP
+        // ==========================================
+        function updateDoctorUI(name, code, hospital, avatarSrc) {
+            const titleElem = document.getElementById("viewTitle");
+            if (titleElem) titleElem.textContent = `Welcome, Dr. ${name} 👋`;
+
+            const idElem = document.getElementById("displayDoctorId");
+            if (idElem) idElem.textContent = code || "DOC";
+
+            const hospElem = document.getElementById("displayHospital");
+            if (hospElem) hospElem.textContent = hospital || "MediLink";
+
+            const finalSrc = avatarSrc && avatarSrc.trim() ? avatarSrc : `https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(name || "Doctor")}&backgroundColor=087f8c`;
+            const avatarImg = document.getElementById("doctorAvatarImg");
+            if (avatarImg) avatarImg.src = finalSrc;
+
+            const preview = document.getElementById("docPreviewAvatar");
+            if (preview) preview.src = finalSrc;
+        }
+
+        function openDoctorProfileModal() {
+            document.getElementById("docNameInput").value = currentDoctorProfile.name || "";
+            document.getElementById("docCodeInput").value = currentDoctorProfile.doctor_code || "";
+            document.getElementById("docSpecInput").value = currentDoctorProfile.specialization || "";
+            document.getElementById("docHospInput").value = currentDoctorProfile.hospital || "";
+            document.getElementById("docPhoneInput").value = currentDoctorProfile.phone || "";
+
+            const localDp = localStorage.getItem("doctor_avatar");
+            const preview = document.getElementById("docPreviewAvatar");
+            if (preview) {
+                preview.src = localDp || `https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(currentDoctorProfile.name || "Doctor")}&backgroundColor=087f8c`;
+                delete preview.dataset.uploadedAvatar;
+            }
+
+            document.getElementById("doctorProfileModal").classList.add("active");
+        }
+
+        function closeDoctorProfileModal() {
+            document.getElementById("doctorProfileModal").classList.remove("active");
+        }
+
+        function handleDoctorAvatarUpload(input) {
+            const file = input.files[0];
+            if (!file) return;
+
+            if (file.size > 2 * 1024 * 1024) {
+                alert("Please select an image smaller than 2MB.");
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                const base64Data = e.target.result;
+                const preview = document.getElementById("docPreviewAvatar");
+                preview.src = base64Data;
+                preview.dataset.uploadedAvatar = base64Data;
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function removeDoctorAvatar() {
+            localStorage.removeItem("doctor_avatar");
+            const preview = document.getElementById("docPreviewAvatar");
+            preview.src = `https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(currentDoctorProfile.name || "Doctor")}&backgroundColor=087f8c`;
+            preview.dataset.uploadedAvatar = "";
+        }
+
+        async function handleSaveDoctorProfile(e) {
+            e.preventDefault();
+            const token = getAuthToken();
+            const payload = {
+                name: document.getElementById("docNameInput").value.trim(),
+                doctor_code: document.getElementById("docCodeInput").value.trim(),
+                specialization: document.getElementById("docSpecInput").value.trim(),
+                hospital: document.getElementById("docHospInput").value.trim(),
+                phone: document.getElementById("docPhoneInput").value.trim()
+            };
+
+            const preview = document.getElementById("docPreviewAvatar");
+            const uploadedAvatar = preview.dataset.uploadedAvatar;
+
+            try {
+                const res = await fetch(`${API_BASE_URL}/api/doctors/me`, {
+                    method: "PUT",
+                    headers: { "Authorization": `Bearer ${token}`, "Content-Type": "application/json" },
+                    body: JSON.stringify(payload)
+                });
+                const data = await res.json();
+                if (!res.ok) throw new Error(data.detail || "Failed to update profile");
+
+                if (uploadedAvatar !== undefined) {
+                    if (uploadedAvatar) localStorage.setItem("doctor_avatar", uploadedAvatar);
+                    else localStorage.removeItem("doctor_avatar");
+                }
+
+                currentDoctorProfile.name = payload.name;
+                currentDoctorProfile.doctor_code = payload.doctor_code;
+                currentDoctorProfile.hospital = payload.hospital;
+                currentDoctorProfile.specialization = payload.specialization;
+                currentDoctorProfile.phone = payload.phone;
+
+                updateDoctorUI(payload.name, payload.doctor_code, payload.hospital, localStorage.getItem("doctor_avatar"));
+                closeDoctorProfileModal();
+                alert("Doctor Profile, ID & DP saved successfully!");
+            } catch (err) { alert(err.message); }
+        }
+
+        // ==========================================
+        // PATIENT SEARCH (BY NAME OR ID) & ACCESS REQUEST
+        // ==========================================
+        async function handleLivePatientSearch(q) {
+            const resultsBox = document.getElementById("patientSearchResults");
+            if (!resultsBox) return;
+            if (!q || !q.trim()) {
+                resultsBox.style.display = "none";
+                return;
+            }
+
+            const token = getAuthToken();
+            try {
+                const res = await fetch(`${API_BASE_URL}/api/doctors/search-patients?q=${encodeURIComponent(q.trim())}`, {
+                    headers: { "Authorization": `Bearer ${token}` }
+                });
+                const data = await res.json();
+                const patients = data.patients || [];
+
+                if (!patients.length) {
+                    resultsBox.innerHTML = `<div style="padding:10px 14px; color:#64748b; font-size:12px;">No patients found matching "${q}"</div>`;
+                    resultsBox.style.display = "block";
+                    return;
+                }
+
+                resultsBox.innerHTML = patients.map(p => `
+                    <div class="search-result-item" onclick="selectPatientForRequest('${p.patient_code}', '${p.name.replace(/'/g, "\\'")}', '${p.blood_group}')">
+                        <div>
+                            <strong>${p.name}</strong>
+                            <small style="display:block; color:#64748b; font-size:11px;">Blood: ${p.blood_group} · ${p.email}</small>
+                        </div>
+                        <span style="font-size:11px; background:#eff6ff; color:#2563eb; padding:3px 8px; border-radius:10px; font-weight:700;">${p.patient_code}</span>
+                    </div>
+                `).join("");
+                resultsBox.style.display = "block";
+            } catch (err) { console.error(err); }
+        }
+
+        function selectPatientForRequest(code, name, blood) {
+            document.getElementById("reqPatientCode").value = code;
+            document.getElementById("selectedPatientName").textContent = `${name} (${code})`;
+            document.getElementById("selectedPatientDetails").textContent = `Blood: ${blood}`;
+            document.getElementById("selectedPatientCard").style.display = "block";
+            document.getElementById("patientSearchResults").style.display = "none";
+            document.getElementById("patientLiveSearchInput").value = "";
+        }
+
+        function clearSelectedPatient() {
+            document.getElementById("reqPatientCode").value = "";
+            document.getElementById("selectedPatientCard").style.display = "none";
+        }
+
+        function openRequestAccessModal() {
+            clearSelectedPatient();
+            document.getElementById("requestAccessForm")?.reset();
+            document.getElementById("reqVRec").checked = true;
+            document.getElementById("reqVMeds").checked = true;
+            document.getElementById("reqVDocs").checked = true;
+            document.getElementById("requestAccessModal").classList.add("active");
+        }
+
+        function closeRequestAccessModal() {
+            document.getElementById("requestAccessModal").classList.remove("active");
+        }
+
+        async function handleSendAccessRequest(e) {
+            e.preventDefault();
+            const token = getAuthToken();
+            if (!token) return alert("Please log in again.");
+
+            const submitBtn = document.getElementById("sendRequestSubmitBtn");
+            let code = document.getElementById("reqPatientCode").value.trim();
+            if (!code) {
+                code = document.getElementById("patientLiveSearchInput").value.trim();
+            }
+            if (!code) return alert("Please search and select a patient first.");
+
+            const payload = {
+                patient_code: code,
+                message: document.getElementById("reqMessage").value.trim() || "Consultation request",
+                can_view_records: document.getElementById("reqVRec").checked,
+                can_edit_records: document.getElementById("reqERec").checked,
+                can_view_medications: document.getElementById("reqVMeds").checked,
+                can_edit_medications: document.getElementById("reqEMeds").checked,
+                can_view_documents: document.getElementById("reqVDocs").checked,
+                can_edit_documents: document.getElementById("reqEDocs").checked
+            };
+
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = "<i class='fa-solid fa-spinner fa-spin'></i> Sending...";
+
+            try {
+                const res = await fetch(`${API_BASE_URL}/api/doctors/request-access`, {
+                    method: "POST",
+                    headers: {
+                        "Authorization": `Bearer ${token}`,
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify(payload)
+                });
+                const data = await res.json();
+                if (!res.ok) throw new Error(data.detail || "Failed to send request");
+
+                alert("Access request sent to patient! The patient can approve it from their dashboard.");
+                closeRequestAccessModal();
+            } catch (err) {
+                alert(err.message);
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = "<i class='fa-solid fa-paper-plane'></i> Send Request";
+            }
+        }
+
+        // ==========================================
+        // VIEW 1: LOAD AUTHORIZED PATIENTS
+        // ==========================================
+        async function loadAuthorizedPatients() {
+            const token = getAuthToken();
+            const container = document.getElementById("authorizedPatientsList");
+            if (!container) return;
+
+            try {
+                const res = await fetch(`${API_BASE_URL}/api/doctors/patients`, { headers: { "Authorization": `Bearer ${token}` } });
+                const data = await res.json();
+                const patients = data.patients || [];
+
+                const countElem = document.getElementById("authorizedPatientsCount");
+                if (countElem) countElem.textContent = patients.length;
+
+                if (!patients.length) {
+                    container.innerHTML = `<div style="text-align: center; padding: 30px; color: #64748b;"><p>No patients have granted access yet.</p><small>You can request access using the button above.</small></div>`;
+                    return;
+                }
+
+                const existingEmptyState = document.getElementById("patientFilterEmptyState");
+                if (!existingEmptyState) {
+                    const emptyBlock = document.createElement("div");
+                    emptyBlock.id = "patientFilterEmptyState";
+                    emptyBlock.style.display = "none";
+                    emptyBlock.style.padding = "20px 12px";
+                    emptyBlock.style.color = "#64748b";
+                    emptyBlock.style.textAlign = "center";
+                    emptyBlock.innerHTML = "<p>No patients match this access level.</p>";
+                    container.appendChild(emptyBlock);
+                }
+
+                // In doctor.html inside loadAuthorizedPatients():
+                container.innerHTML = patients.map(p => {
+                    const makeBadge = (title, canV, canE) => !canV ? `<span class="badge inactive">${title}</span>` : (canE ? `<span class="badge active">${title}: Edit</span>` : `<span class="badge view-only">${title}: View</span>`);
+                    const accessState = getDoctorAccessState(p);
+                    return `
+    <div class="patient-card" data-access-state="${accessState}">
+        <div class="patient-info">
+            <div class="patient-avatar"><i class="fa-solid fa-user"></i></div>
+            <div>
+                <strong>${p.name}</strong>
+                <small style="display:block; color:#64748b;">Code: ${p.patient_code} · Blood: ${p.blood_group || "N/A"}</small>
+                <div class="badges-list">
+                    ${makeBadge("Records", p.can_view_records, p.can_edit_records)}
+                    ${makeBadge("Meds", p.can_view_medications, p.can_edit_medications)}
+                    ${makeBadge("Docs", p.can_view_documents, p.can_edit_documents)}
+                </div>
+            </div>
+        </div>
+        <div style="display: flex; gap: 8px;">
+            <button class="view-btn" onclick="openPatientModal(${p.patient_db_id}, '${p.name}', '${p.patient_code}', ${Boolean(p.can_view_records)}, ${Boolean(p.can_edit_records)}, ${Boolean(p.can_view_medications)}, ${Boolean(p.can_edit_medications)}, ${Boolean(p.can_view_documents)}, ${Boolean(p.can_edit_documents)})">
+                <i class="fa-solid fa-folder-open"></i> Access Records
+            </button>
+            <button type="button" class="btn-action" title="Request more permissions from this patient" onclick="openRequestUpgradeModal('${p.patient_code}', '${p.name.replace(/'/g, "\\'")}', '${p.blood_group || ''}', ${Boolean(p.can_view_records)}, ${Boolean(p.can_edit_records)}, ${Boolean(p.can_view_medications)}, ${Boolean(p.can_edit_medications)}, ${Boolean(p.can_view_documents)}, ${Boolean(p.can_edit_documents)})">
+                <i class="fa-solid fa-key"></i> Request More Access
+            </button>
+        </div>
+    </div>`;
+                }).join("");
+                applyDoctorPatientFilter(currentDoctorFilter);
+            } catch (err) {
+                container.innerHTML = `<p style="color:red;">Error loading patient list.</p>`;
+            }
+        }
+
+        // ==========================================
+        // VIEW 2: MASTER MEDICAL RECORDS LIST
+        // ==========================================
+        async function loadAllMasterRecords() {
+            const token = getAuthToken();
+            const container = document.getElementById("allRecordsTableContainer");
+            if (!container) return;
+            container.innerHTML = `<p style="color: #64748b;"><i class="fa-solid fa-spinner fa-spin"></i> Loading all records...</p>`;
+
+            try {
+                const res = await fetch(`${API_BASE_URL}/api/doctors/records`, { headers: { "Authorization": `Bearer ${token}` } });
+                const data = await res.json();
+                allMasterRecords = data.records || [];
+                renderMasterRecordsTable(allMasterRecords);
+            } catch (err) {
+                container.innerHTML = `<p style="color: red;">Failed to load master records.</p>`;
+            }
+        }
+
+        function renderMasterRecordsTable(records) {
+            const container = document.getElementById("allRecordsTableContainer");
+            if (!records.length) {
+                container.innerHTML = `<div style="text-align: center; padding: 40px; color: #64748b;"><i class="fa-solid fa-file-medical" style="font-size: 36px; margin-bottom: 10px; color:#cbd5e1;"></i><p>No medical records found across authorized patients.</p></div>`;
+                return;
+            }
+
+            container.innerHTML = `
+                <table class="master-table">
+                    <thead>
+                        <tr>
+                            <th>Record Title / Reason</th>
+                            <th>Diagnosis</th>
+                            <th>Patient</th>
+                            <th>Date</th>
+                            <th>Doctor</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${records.map(r => `
+                            <tr>
+                                <td><strong>${r.title}</strong></td>
+                                <td><span style="color: #475569;">${r.diagnosis || "No diagnosis"}</span></td>
+                                <td>
+                                    <strong>${r.patient_name}</strong>
+                                    <small style="display: block; color: #64748b;">${r.patient_code}</small>
+                                </td>
+                                <td>${r.record_date || "N/A"}</td>
+                                <td><span style="color:#087f8c; font-weight:500;">${r.doctor_name || "N/A"}</span></td>
+                                <td>
+                                    <button type="button" class="btn-action" onclick="openPatientModal(${r.patient_id}, '${r.patient_name}', '${r.patient_code}', true, true, true, true, true, true)">
+                                        <i class="fa-solid fa-folder-open"></i> Open Patient
+                                    </button>
+                                </td>
+                            </tr>
+                        `).join("")}
+                    </tbody>
+                </table>
+            `;
+        }
+
+        function filterRecordsTable() {
+            const q = document.getElementById("recordSearchInput").value.toLowerCase().trim();
+            if (!q) return renderMasterRecordsTable(allMasterRecords);
+
+            const filtered = allMasterRecords.filter(r =>
+                (r.title && r.title.toLowerCase().includes(q)) ||
+                (r.diagnosis && r.diagnosis.toLowerCase().includes(q)) ||
+                (r.patient_name && r.patient_name.toLowerCase().includes(q)) ||
+                (r.patient_code && r.patient_code.toLowerCase().includes(q))
+            );
+            renderMasterRecordsTable(filtered);
+        }
+
+        // ==========================================
+        // VIEW 3: MASTER PRESCRIPTIONS LIST
+        // ==========================================
+        async function loadAllMasterPrescriptions() {
+            const token = getAuthToken();
+            const container = document.getElementById("allPrescriptionsTableContainer");
+            if (!container) return;
+            container.innerHTML = `<p style="color: #64748b;"><i class="fa-solid fa-spinner fa-spin"></i> Loading all prescriptions...</p>`;
+
+            try {
+                const res = await fetch(`${API_BASE_URL}/api/doctors/prescriptions`, { headers: { "Authorization": `Bearer ${token}` } });
+                const data = await res.json();
+                allMasterPrescriptions = data.prescriptions || [];
+                renderMasterPrescriptionsTable(allMasterPrescriptions);
+            } catch (err) {
+                container.innerHTML = `<p style="color: red;">Failed to load master prescriptions.</p>`;
+            }
+        }
+
+        function renderMasterPrescriptionsTable(prescriptions) {
+            const container = document.getElementById("allPrescriptionsTableContainer");
+            if (!prescriptions.length) {
+                container.innerHTML = `<div style="text-align: center; padding: 40px; color: #64748b;"><i class="fa-solid fa-pills" style="font-size: 36px; margin-bottom: 10px; color:#cbd5e1;"></i><p>No prescriptions on file across authorized patients.</p></div>`;
+                return;
+            }
+
+            container.innerHTML = `
+                <table class="master-table">
+                    <thead>
+                        <tr>
+                            <th>Medication</th>
+                            <th>Patient</th>
+                            <th>Dosage & Frequency</th>
+                            <th>Duration</th>
+                            <th>Prescribed By</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${prescriptions.map(m => `
+                            <tr>
+                                <td>
+                                    <strong>${m.name}</strong>
+                                    <small style="display: block; color: #64748b;">${m.notes || "No extra instructions"}</small>
+                                </td>
+                                <td>
+                                    <strong>${m.patient_name}</strong>
+                                    <small style="display: block; color: #64748b;">${m.patient_code}</small>
+                                </td>
+                                <td>${m.dosage || "N/A"} · ${m.frequency || "N/A"}</td>
+                                <td>${m.duration || "N/A"}</td>
+                                <td><span style="color:#087f8c; font-weight:500;">${m.doctor_name || "N/A"}</span></td>
+                                <td>
+                                    <button type="button" class="btn-action" onclick="openPatientModal(${m.patient_id}, '${m.patient_name}', '${m.patient_code}', true, true, true, true, true, true)">
+                                        <i class="fa-solid fa-folder-open"></i> Open Patient
+                                    </button>
+                                </td>
+                            </tr>
+                        `).join("")}
+                    </tbody>
+                </table>
+            `;
+        }
+
+        function filterPrescriptionsTable() {
+            const q = document.getElementById("prescriptionSearchInput").value.toLowerCase().trim();
+            if (!q) return renderMasterPrescriptionsTable(allMasterPrescriptions);
+
+            const filtered = allMasterPrescriptions.filter(m =>
+                (m.name && m.name.toLowerCase().includes(q)) ||
+                (m.dosage && m.dosage.toLowerCase().includes(q)) ||
+                (m.patient_name && m.patient_name.toLowerCase().includes(q)) ||
+                (m.patient_code && m.patient_code.toLowerCase().includes(q))
+            );
+            renderMasterPrescriptionsTable(filtered);
+        }
+        function openRequestUpgradeModal(code, name, blood, canVRec, canERec, canVMeds, canEMeds, canVDocs, canEDocs) {
+            selectPatientForRequest(code, name, blood);
+
+            // Pre-check current permissions
+            document.getElementById("reqVRec").checked = canVRec;
+            document.getElementById("reqERec").checked = canERec;
+            document.getElementById("reqVMeds").checked = canVMeds;
+            document.getElementById("reqEMeds").checked = canEMeds;
+            document.getElementById("reqVDocs").checked = canVDocs;
+            document.getElementById("reqEDocs").checked = canEDocs;
+
+            document.getElementById("reqMessage").value = "Requesting upgraded / expanded consultation access";
+            document.getElementById("requestAccessModal").classList.add("active");
+        }
+        // ==========================================
+        // PATIENT MODAL & TABS
+        // ==========================================
+        function openPatientModal(id, name, code, canRecords, canEditRecords, canMeds, canEditMeds, canDocs, canEditDocs) {
+            currentPatientId = id;
+            currentPermissions = { canRecords, canEditRecords, canMeds, canEditMeds, canDocs, canEditDocs };
+            document.getElementById("modalPatientName").textContent = name;
+            document.getElementById("modalPatientCode").textContent = `Patient ID: ${code}`;
+            document.getElementById("patientDetailsModal").classList.add("active");
+            switchTab('records', document.querySelector(".tab-btn[data-tab='records']"));
+        }
+
+        function closePatientModal() { document.getElementById("patientDetailsModal").classList.remove("active"); }
+
+        async function switchTab(tab, triggerElement) {
+            const token = getAuthToken();
+            const container = document.getElementById("modalDataContent");
+            document.querySelectorAll(".tab-nav .tab-btn").forEach(btn => btn.classList.remove("active"));
+            if (triggerElement) triggerElement.classList.add("active");
+            container.innerHTML = "<p style='color: #64748b;'><i class='fa-solid fa-spinner fa-spin'></i> Loading...</p>";
+
+            // RECORDS
+            if (tab === 'records') {
+                if (!currentPermissions.canRecords) return container.innerHTML = "<p style='color:red;'>Access Denied to Medical Records.</p>";
+                try {
+                    const res = await fetch(`${API_BASE_URL}/api/doctors/patients/${currentPatientId}/records`, { headers: { "Authorization": `Bearer ${token}` } });
+                    const data = await res.json();
+                    cachedRecords = data.records || [];
+                    if (data.access && data.access.can_edit_records !== undefined) currentPermissions.canEditRecords = Boolean(data.access.can_edit_records);
+
+                    const toolbar = `
+                        <div class="tab-toolbar">
+                            <span style="font-size:13px; font-weight:600;">Total Records: ${cachedRecords.length}</span>
+                            ${currentPermissions.canEditRecords ? `<button type="button" class="view-btn" onclick="openCreateRecordModal()"><i class="fa-solid fa-plus"></i> Add New Record</button>` : `<span class="view-only-badge"><i class="fa-solid fa-eye"></i> View Only</span>`}
+                        </div>`;
+                    if (!cachedRecords.length) return container.innerHTML = toolbar + "<p style='color:#64748b; padding:20px 0;'>No medical records on file.</p>";
+
+                    container.innerHTML = toolbar + cachedRecords.map(r => `
+                        <div class="data-item">
+                            <div class="data-content">
+                                <strong>${r.title}</strong>
+                                <p style="font-size:13px; margin:4px 0;">Diagnosis: ${r.diagnosis || "N/A"}</p>
+                                <small style="color:#087f8c;">Date: ${r.record_date} · Doctor: ${r.doctor_name || "N/A"}</small>
+                            </div>
+                            <div class="data-actions">
+                                ${currentPermissions.canEditRecords ? `<button type="button" class="btn-action btn-edit" onclick="openEditRecordModal(${r.id})"><i class="fa-solid fa-pen"></i> Edit</button>` : `<span class="view-only-badge"><i class="fa-solid fa-eye"></i> View Only</span>`}
+                            </div>
+                        </div>`).join("");
+                } catch (e) { container.innerHTML = "<p style='color:red;'>Failed to load records.</p>"; }
+            }
+
+            // MEDICATIONS
+            if (tab === 'medications') {
+                if (!currentPermissions.canMeds) return container.innerHTML = "<p style='color:red;'>Access Denied to Medications.</p>";
+                try {
+                    const res = await fetch(`${API_BASE_URL}/api/doctors/patients/${currentPatientId}/medications`, { headers: { "Authorization": `Bearer ${token}` } });
+                    const data = await res.json();
+                    cachedMedications = data.medications || [];
+                    if (data.access && data.access.can_edit_medications !== undefined) currentPermissions.canEditMeds = Boolean(data.access.can_edit_medications);
+
+                    const toolbar = `
+                        <div class="tab-toolbar">
+                            <span style="font-size:13px; font-weight:600;">Active Medications: ${cachedMedications.length}</span>
+                            ${currentPermissions.canEditMeds ? `<button type="button" class="view-btn" onclick="openCreateMedModal()"><i class="fa-solid fa-plus"></i> Prescribe Medication</button>` : `<span class="view-only-badge"><i class="fa-solid fa-eye"></i> View Only</span>`}
+                        </div>`;
+                    if (!cachedMedications.length) return container.innerHTML = toolbar + "<p style='color:#64748b; padding:20px 0;'>No active medications on file.</p>";
+
+                    container.innerHTML = toolbar + cachedMedications.map(m => `
+                        <div class="data-item">
+                            <div class="data-content">
+                                <strong>${m.name}</strong> (${m.dosage || "N/A"})
+                                <p style="font-size:13px; margin:3px 0;">Frequency: ${m.frequency || "N/A"} · Duration: ${m.duration || "N/A"}</p>
+                                <small style="color:#64748b;">7-day adherence: ${m.adherence_7d?.due ? `${m.adherence_7d.taken}/${m.adherence_7d.due} doses taken` : "No scheduled doses"}</small>
+                            </div>
+                            <div class="data-actions">
+                                ${currentPermissions.canEditMeds ? `<button type="button" class="btn-action btn-edit" onclick="openEditMedicationModal(${m.id})"><i class="fa-solid fa-pen"></i> Edit</button>` : `<span class="view-only-badge"><i class="fa-solid fa-eye"></i> View Only</span>`}
+                            </div>
+                        </div>`).join("");
+                } catch (e) { container.innerHTML = "<p style='color:red;'>Failed to load medications.</p>"; }
+            }
+
+            // DOCUMENTS
+            if (tab === 'documents') {
+                if (!currentPermissions.canDocs) return container.innerHTML = "<p style='color:red;'>Access Denied to Documents.</p>";
+                try {
+                    const res = await fetch(`${API_BASE_URL}/api/doctors/patients/${currentPatientId}/documents`, { headers: { "Authorization": `Bearer ${token}` } });
+                    const data = await res.json();
+                    const docs = data.documents || [];
+                    if (data.access && data.access.can_edit_documents !== undefined) currentPermissions.canEditDocs = Boolean(data.access.can_edit_documents);
+
+                    if (!docs.length) return container.innerHTML = "<p style='color:#64748b; padding:20px 0;'>No documents uploaded.</p>";
+
+                    container.innerHTML = docs.map(d => {
+                        const escapedTitle = (d.title || 'Document').replace(/'/g, "\\'");
+                        const escapedFile = (d.file_name || '').replace(/'/g, "\\'");
+                        return `
+                        <div class="data-item">
+                            <div class="data-content">
+                                <strong>${d.title}</strong> (${d.document_type || "File"})
+                                <p style="font-size:12px; color:#64748b; margin-top:3px;">${d.file_name}</p>
+                            </div>
+                            <div class="data-actions">
+                                <button type="button" class="btn-action btn-view-doc" onclick="viewDocument(${d.id}, '${escapedTitle}', '${escapedFile}')"><i class="fa-solid fa-eye"></i> View</button>
+                                <button type="button" class="btn-action" onclick="downloadDocument(${d.id}, '${escapedFile}')"><i class="fa-solid fa-download"></i></button>
+                                ${!currentPermissions.canEditDocs ? `<span class="view-only-badge"><i class="fa-solid fa-eye"></i> View Only</span>` : ''}
+                            </div>
+                        </div>`;
+                    }).join("");
+                } catch (e) { container.innerHTML = "<p style='color:red;'>Failed to load documents.</p>"; }
+            }
+        }
+
+        // ==========================================
+        // DOCUMENT VIEWER ENGINE
+        // ==========================================
+        async function viewDocument(docId, title, fileName) {
+            const token = getAuthToken();
+            if (!token) return alert("Please log in again.");
+
+            document.getElementById("previewDocTitle").textContent = title;
+            document.getElementById("previewDocSub").textContent = fileName;
+
+            const downloadBtn = document.getElementById("previewDownloadBtn");
+            downloadBtn.onclick = () => downloadDocument(docId, fileName);
+
+            const container = document.getElementById("previewDocFrameContainer");
+            container.innerHTML = `<div style="text-align: center; color: #64748b;"><i class="fa-solid fa-spinner fa-spin" style="font-size:32px; margin-bottom:12px; color:#087f8c;"></i><p>Loading document...</p></div>`;
+            document.getElementById("documentPreviewModal").classList.add("active");
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/api/documents/${docId}/file`, {
+                    headers: { "Authorization": `Bearer ${token}` }
+                });
+                if (!response.ok) throw new Error("Could not retrieve document");
+
+                const blob = await response.blob();
+                const blobUrl = URL.createObjectURL(blob);
+                const ext = fileName.split('.').pop().toLowerCase();
+
+                if (['jpg', 'jpeg', 'png', 'gif', 'webp'].includes(ext)) {
+                    container.innerHTML = `<img src="${blobUrl}" alt="Preview" style="max-width: 100%; max-height: 100%; object-fit: contain;">`;
+                } else if (ext === 'pdf') {
+                    container.innerHTML = `<iframe src="${blobUrl}" width="100%" height="100%" style="border:none;"></iframe>`;
+                } else if (ext === 'docx') {
+                    container.innerHTML = `<div id="docxPreviewWrapper" style="width: 100%; height: 100%; overflow-y: auto; background: #fff; padding: 25px; box-sizing: border-box;"></div>`;
+                    const docxTarget = document.getElementById("docxPreviewWrapper");
+                    if (window.docx) {
+                        docx.renderAsync(blob, docxTarget, null, { inWrapper: false, ignoreWidth: true, ignoreHeight: true })
+                            .catch(err => {
+                                docxTarget.innerHTML = `<div style="text-align:center; padding:40px;"><p>Failed to render .docx preview.</p><button type="button" class="view-btn" onclick="downloadDocument(${docId}, '${fileName}')">Download</button></div>`;
+                            });
+                    }
+                } else if (ext === 'doc') {
+                    container.innerHTML = `
+                        <div style="text-align: center; padding: 40px; color: #64748b;">
+                            <i class="fa-regular fa-file-word" style="font-size: 42px; margin-bottom: 12px; color: #2563eb;"></i>
+                            <p>Legacy <strong>.doc</strong> binary files cannot be previewed in-browser.<br><small>Convert to <strong>.docx</strong> or <strong>.pdf</strong> for previewing.</small></p>
+                            <button type="button" class="view-btn" style="margin-top: 15px;" onclick="downloadDocument(${docId}, '${fileName}')"><i class="fa-solid fa-download"></i> Download .doc</button>
+                        </div>`;
+                } else {
+                    container.innerHTML = `<div style="text-align: center; padding: 40px;"><p>Preview not supported for <strong>.${ext}</strong> files.</p><button type="button" class="view-btn" onclick="downloadDocument(${docId}, '${fileName}')">Download</button></div>`;
+                }
+            } catch (err) { container.innerHTML = `<p style="color:red; padding:20px;">Failed to load: ${err.message}</p>`; }
+        }
+
+        async function downloadDocument(docId, fileName) {
+            const token = getAuthToken();
+            if (!token) return alert("Please log in again.");
+            try {
+                const response = await fetch(`${API_BASE_URL}/api/documents/${docId}/file`, { headers: { "Authorization": `Bearer ${token}` } });
+                if (!response.ok) throw new Error("Download failed");
+                const blob = await response.blob();
+                const blobUrl = URL.createObjectURL(blob);
+                const a = document.createElement("a");
+                a.href = blobUrl;
+                a.download = fileName || "medical_document";
+                document.body.appendChild(a);
+                a.click();
+                a.remove();
+                setTimeout(() => URL.revokeObjectURL(blobUrl), 60000);
+            } catch (err) { alert(err.message); }
+        }
+
+        function closeDocPreviewModal() {
+            document.getElementById("documentPreviewModal").classList.remove("active");
+            document.getElementById("previewDocFrameContainer").innerHTML = "";
+        }
+
+        // CREATE & EDIT ACTIONS
+        function openCreateRecordModal() {
+            document.getElementById("createRecordForm").reset();
+            document.getElementById("createRecordDate").value = new Date().toISOString().slice(0, 10);
+            document.getElementById("createRecordModal").classList.add("active");
+        }
+        function closeCreateRecordModal() { document.getElementById("createRecordModal").classList.remove("active"); }
+
+        async function handleCreateRecord(e) {
+            e.preventDefault();
+            const token = getAuthToken();
+            const payload = {
+                title: document.getElementById("createRecordTitle").value,
+                diagnosis: document.getElementById("createRecordDiagnosis").value || null,
+                record_date: document.getElementById("createRecordDate").value,
+                description: document.getElementById("createRecordDescription").value || null
+            };
+            const res = await fetch(`${API_BASE_URL}/api/doctors/patients/${currentPatientId}/records`, {
+                method: "POST", headers: { "Content-Type": "application/json", "Authorization": `Bearer ${token}` },
+                body: JSON.stringify(payload)
+            });
+            if (!res.ok) return alert("Failed to add record");
+            closeCreateRecordModal();
+            switchTab('records');
+        }
+
+        function openEditRecordModal(id) {
+            const r = cachedRecords.find(x => x.id === id);
+            document.getElementById("editRecordId").value = r.id;
+            document.getElementById("editRecordTitle").value = r.title || "";
+            document.getElementById("editRecordDiagnosis").value = r.diagnosis || "";
+            document.getElementById("editRecordDate").value = r.record_date ? r.record_date.slice(0, 10) : "";
+            document.getElementById("editRecordNotes").value = r.notes || r.description || "";
+            document.getElementById("editRecordModal").classList.add("active");
+        }
+        function closeEditRecordModal() { document.getElementById("editRecordModal").classList.remove("active"); }
+
+        async function handleSaveRecord(e) {
+            e.preventDefault();
+            const token = getAuthToken();
+            const id = document.getElementById("editRecordId").value;
+            const payload = {
+                title: document.getElementById("editRecordTitle").value,
+                diagnosis: document.getElementById("editRecordDiagnosis").value,
+                record_date: document.getElementById("editRecordDate").value,
+                notes: document.getElementById("editRecordNotes").value
+            };
+            const res = await fetch(`${API_BASE_URL}/api/doctors/patients/${currentPatientId}/records/${id}`, {
+                method: "PUT", headers: { "Content-Type": "application/json", "Authorization": `Bearer ${token}` },
+                body: JSON.stringify(payload)
+            });
+            if (!res.ok) return alert("Failed to save record");
+            closeEditRecordModal();
+            switchTab('records');
+        }
+
+        function openCreateMedModal() {
+            document.getElementById("createMedicationForm").reset();
+            document.getElementById("createMedStartDate").value = new Date().toISOString().slice(0, 10);
+            document.getElementById("createMedicationModal").classList.add("active");
+        }
+        function closeCreateMedModal() { document.getElementById("createMedicationModal").classList.remove("active"); }
+
+        async function handleCreateMedication(e) {
+            e.preventDefault();
+            const token = getAuthToken();
+            const payload = {
+                name: document.getElementById("createMedName").value,
+                dosage: document.getElementById("createMedDosage").value || null,
+                frequency: document.getElementById("createMedFrequency").value || null,
+                duration: document.getElementById("createMedDuration").value || null,
+                start_date: document.getElementById("createMedStartDate").value || null,
+                end_date: document.getElementById("createMedEndDate").value || null,
+                notes: document.getElementById("createMedNotes").value || null
+            };
+            const res = await fetch(`${API_BASE_URL}/api/doctors/patients/${currentPatientId}/medications`, {
+                method: "POST", headers: { "Content-Type": "application/json", "Authorization": `Bearer ${token}` },
+                body: JSON.stringify(payload)
+            });
+            if (!res.ok) return alert("Failed to prescribe medication");
+            closeCreateMedModal();
+            switchTab('medications');
+        }
+
+        function openEditMedicationModal(id) {
+            const m = cachedMedications.find(x => x.id === id);
+            document.getElementById("editMedicationId").value = m.id;
+            document.getElementById("editMedName").value = m.name || "";
+            document.getElementById("editMedDosage").value = m.dosage || "";
+            document.getElementById("editMedFrequency").value = m.frequency || "";
+            document.getElementById("editMedDuration").value = m.duration || "";
+            document.getElementById("editMedNotes").value = m.notes || "";
+            document.getElementById("editMedicationModal").classList.add("active");
+        }
+        function closeEditMedicationModal() { document.getElementById("editMedicationModal").classList.remove("active"); }
+
+        async function handleSaveMedication(e) {
+            e.preventDefault();
+            const token = getAuthToken();
+            const id = document.getElementById("editMedicationId").value;
+            const payload = {
+                name: document.getElementById("editMedName").value,
+                dosage: document.getElementById("editMedDosage").value,
+                frequency: document.getElementById("editMedFrequency").value,
+                duration: document.getElementById("editMedDuration").value,
+                notes: document.getElementById("editMedNotes").value
+            };
+            const res = await fetch(`${API_BASE_URL}/api/doctors/patients/${currentPatientId}/medications/${id}`, {
+                method: "PUT", headers: { "Content-Type": "application/json", "Authorization": `Bearer ${token}` },
+                body: JSON.stringify(payload)
+            });
+            if (!res.ok) return alert("Failed to update medication");
+            closeEditMedicationModal();
+            switchTab('medications');
+        }
+
+        window.onclick = function (event) {
+            const modals = ["doctorProfileModal", "requestAccessModal", "createRecordModal", "editRecordModal", "createMedicationModal", "editMedicationModal", "documentPreviewModal"];
+            modals.forEach(id => {
+                const el = document.getElementById(id);
+                if (event.target === el) el.classList.remove("active");
+            });
+        };
+
+        document.addEventListener("DOMContentLoaded", initDoctorDashboard);
+    </script>
+</body>
+
+</html>

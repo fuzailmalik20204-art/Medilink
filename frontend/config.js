@@ -1,0 +1,1 @@
+window.MEDILINK_API_BASE_URL = "";

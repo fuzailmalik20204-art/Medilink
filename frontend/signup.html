@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MediLink | Create Account</title>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link rel="stylesheet" href="auth.css">
+
+    <style>
+        .auth-message {
+            margin-bottom: 16px;
+            padding: 11px 14px;
+            border-radius: 8px;
+            font-size: 13px;
+            display: none;
+        }
+
+        .auth-message.error {
+            display: block;
+            background: #fef2f2;
+            color: #dc2626;
+            border: 1px solid #fecaca;
+        }
+
+        .auth-message.success {
+            display: block;
+            background: #f0fdf4;
+            color: #16a34a;
+            border: 1px solid #bbf7d0;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- NAVBAR -->
+    <header class="auth-navbar">
+        <a href="index.html" class="logo">
+            <div class="logo-icon">
+                <i class="fa-solid fa-plus"></i>
+            </div>
+            <span>Medi<span>Link</span></span>
+        </a>
+
+        <a href="index.html" class="back-home">
+            <i class="fa-solid fa-arrow-left"></i>
+            Back to Home
+        </a>
+    </header>
+
+    <!-- SIGNUP MAIN -->
+    <main class="auth-page signup-page">
+        <div class="auth-container signup-container">
+            <!-- LEFT INFO PANEL -->
+            <div class="auth-info">
+                <div class="info-content">
+                    <span class="auth-label">JOIN MEDILINK</span>
+                    <h1>Take Control<br>of Your <span>Health.</span></h1>
+                    <p>
+                        Create your secure MediLink account and start managing your
+                        healthcare information in one connected platform.
+                    </p>
+
+                    <div class="signup-steps">
+                        <div class="signup-step">
+                            <div class="step-number">01</div>
+                            <div>
+                                <h3>Create Your Profile</h3>
+                                <p>Enter your basic account information.</p>
+                            </div>
+                        </div>
+
+                        <div class="signup-step">
+                            <div class="step-number">02</div>
+                            <div>
+                                <h3>Build Your Health Record</h3>
+                                <p>Organize your medical information.</p>
+                            </div>
+                        </div>
+
+                        <div class="signup-step">
+                            <div class="step-number">03</div>
+                            <div>
+                                <h3>Connect With Healthcare</h3>
+                                <p>Control access to your information.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- RIGHT SIGNUP CARD -->
+            <div class="auth-card-wrapper">
+                <div class="auth-card signup-card">
+                    <div class="auth-card-header">
+                        <h2>Create Account</h2>
+                        <p>Get started with MediLink</p>
+                    </div>
+
+                    <!-- Alert message box -->
+                    <div id="signupMessage" class="auth-message"></div>
+
+                    <form id="signupForm">
+                        <!-- Full Name -->
+                        <div class="form-group">
+                            <label for="fullname">Full Name</label>
+                            <div class="input-wrapper">
+                                <i class="fa-regular fa-user"></i>
+                                <input
+                                    type="text"
+                                    id="fullname"
+                                    placeholder="Enter your full name"
+                                    required
+                                >
+                            </div>
+                        </div>
+
+                        <!-- Email Address -->
+                        <div class="form-group">
+                            <label for="signupEmail">Email Address</label>
+                            <div class="input-wrapper">
+                                <i class="fa-regular fa-envelope"></i>
+                                <input
+                                    type="email"
+                                    id="signupEmail"
+                                    placeholder="Enter your email"
+                                    required
+                                >
+                            </div>
+                        </div>
+
+                        <!-- Account Type (Role Selection) -->
+                        <div class="form-group">
+                            <label>Account Type</label>
+                            <div class="role-selection">
+                                <label class="role-card">
+                                    <input
+                                        type="radio"
+                                        name="role"
+                                        value="patient"
+                                        checked
+                                    >
+                                    <div class="role-content">
+                                        <div class="role-icon">
+                                            <i class="fa-solid fa-user"></i>
+                                        </div>
+                                        <div>
+                                            <strong>Patient</strong>
+                                            <span>Manage my health records</span>
+                                        </div>
+                                    </div>
+                                </label>
+
+                                <label class="role-card">
+                                    <input
+                                        type="radio"
+                                        name="role"
+                                        value="doctor"
+                                    >
+                                    <div class="role-content">
+                                        <div class="role-icon">
+                                            <i class="fa-solid fa-user-doctor"></i>
+                                        </div>
+                                        <div>
+                                            <strong>Healthcare Provider</strong>
+                                            <span>Manage patient records</span>
+                                        </div>
+                                    </div>
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Password -->
+                        <div class="form-group">
+                            <label for="signupPassword">Password</label>
+                            <div class="input-wrapper">
+                                <i class="fa-solid fa-lock"></i>
+                                <input
+                                    type="password"
+                                    id="signupPassword"
+                                    placeholder="Create a password"
+                                    required
+                                >
+                                <button
+                                    type="button"
+                                    class="password-toggle"
+                                    onclick="toggleSignupPassword()"
+                                >
+                                    <i class="fa-regular fa-eye" id="signupEye"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Confirm Password -->
+                        <div class="form-group">
+                            <label for="confirmPassword">Confirm Password</label>
+                            <div class="input-wrapper">
+                                <i class="fa-solid fa-lock"></i>
+                                <input
+                                    type="password"
+                                    id="confirmPassword"
+                                    placeholder="Confirm your password"
+                                    required
+                                >
+                            </div>
+                        </div>
+
+                        <!-- Terms of Service -->
+                        <div class="terms">
+                            <label>
+                                <input type="checkbox" id="terms" required>
+                                <span>
+                                    I agree to the <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a>
+                                </span>
+                            </label>
+                        </div>
+
+                        <!-- Submit Button -->
+                        <button type="submit" class="auth-btn" id="signupSubmitBtn">
+                            <span>Create My Account</span>
+                            <i class="fa-solid fa-arrow-right"></i>
+                        </button>
+                    </form>
+
+                    <div class="divider">
+                        <span>ALREADY REGISTERED?</span>
+                    </div>
+
+                    <p class="signup-text">
+                        Already have an account?
+                        <a href="login.html">Login</a>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="auth-footer">
+        <p>© 2026 MediLink. Your Medical History. Wherever Your Care Takes You.</p>
+    </footer>
+
+    <!-- JAVASCRIPT -->
+    <script src="config.js"></script>
+    <script>
+        const API_BASE_URL = window.MEDILINK_API_BASE_URL || `${window.location.protocol}//${window.location.hostname}:8000`;
+
+        function toggleSignupPassword() {
+            const passwordInput = document.getElementById("signupPassword");
+            const eyeIcon = document.getElementById("signupEye");
+
+            if (passwordInput.type === "password") {
+                passwordInput.type = "text";
+                eyeIcon.classList.remove("fa-eye");
+                eyeIcon.classList.add("fa-eye-slash");
+            } else {
+                passwordInput.type = "password";
+                eyeIcon.classList.remove("fa-eye-slash");
+                eyeIcon.classList.add("fa-eye");
+            }
+        }
+
+        function showMessage(text, isError = true) {
+            const messageEl = document.getElementById("signupMessage");
+            messageEl.textContent = text;
+            messageEl.className = isError ? "auth-message error" : "auth-message success";
+            messageEl.style.display = "block";
+        }
+
+        document.getElementById("signupForm").addEventListener("submit", async function (event) {
+            event.preventDefault();
+
+            const name = document.getElementById("fullname").value.trim();
+            const email = document.getElementById("signupEmail").value.trim();
+            const password = document.getElementById("signupPassword").value;
+            const confirmPassword = document.getElementById("confirmPassword").value;
+            const termsChecked = document.getElementById("terms").checked;
+
+            // Capture the selected role ('patient' or 'doctor')
+            const role = document.querySelector('input[name="role"]:checked')?.value || "patient";
+            const submitBtn = document.getElementById("signupSubmitBtn");
+
+            // Client-side validations
+            if (password !== confirmPassword) {
+                showMessage("Passwords do not match.", true);
+                return;
+            }
+
+            if (!termsChecked) {
+                showMessage("Please agree to the Terms of Service and Privacy Policy.", true);
+                return;
+            }
+
+            // Construct payload with role included
+            const payload = {
+                name: name,
+                email: email,
+                password: password,
+                role: role
+            };
+
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Creating Account...`;
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/api/auth/signup`, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify(payload)
+                });
+
+                const data = await response.json();
+
+                if (!response.ok) {
+                    let errorMsg = "Registration failed.";
+                    if (typeof data.detail === "string") {
+                        errorMsg = data.detail;
+                    } else if (Array.isArray(data.detail)) {
+                        errorMsg = data.detail.map(e => e.msg).join(", ");
+                    }
+                    throw new Error(errorMsg);
+                }
+
+                showMessage("Account created successfully! Redirecting to login...", false);
+
+                setTimeout(() => {
+                    window.location.href = "login.html";
+                }, 1200);
+
+            } catch (error) {
+                console.error("Signup error:", error);
+                showMessage(error.message || "Could not connect to the MediLink backend.", true);
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = `<span>Create My Account</span> <i class="fa-solid fa-arrow-right"></i>`;
+            }
+        });
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MediLink | Login</title>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link rel="stylesheet" href="auth.css">
+
+    <style>
+        .auth-message {
+            margin-bottom: 16px;
+            padding: 11px 14px;
+            border-radius: 8px;
+            font-size: 13px;
+            display: none;
+        }
+
+        .auth-message.error {
+            display: block;
+            background: #fef2f2;
+            color: #dc2626;
+            border: 1px solid #fecaca;
+        }
+
+        .auth-message.success {
+            display: block;
+            background: #f0fdf4;
+            color: #16a34a;
+            border: 1px solid #bbf7d0;
+        }
+
+        .form-options {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 13px;
+            margin-bottom: 20px;
+        }
+
+        .form-options label {
+            display: flex;
+            align-items: center;
+            gap: 7px;
+            color: #475569;
+            cursor: pointer;
+        }
+
+        .forgot-link {
+            color: #087f8c;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .forgot-link:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- NAVBAR -->
+    <header class="auth-navbar">
+        <a href="index.html" class="logo">
+            <div class="logo-icon">
+                <i class="fa-solid fa-plus"></i>
+            </div>
+            <span>Medi<span>Link</span></span>
+        </a>
+
+        <a href="index.html" class="back-home">
+            <i class="fa-solid fa-arrow-left"></i>
+            Back to Home
+        </a>
+    </header>
+
+    <!-- LOGIN MAIN -->
+    <main class="auth-page login-page">
+        <div class="auth-container login-container">
+            <!-- LEFT INFO PANEL -->
+            <div class="auth-info">
+                <div class="info-content">
+                    <span class="auth-label">SECURE HEALTHCARE NETWORK</span>
+                    <h1>Welcome Back<br>to <span>MediLink.</span></h1>
+                    <p>
+                        Log in to access your unified medical timeline, managed prescriptions, 
+                        and provider data permissions.
+                    </p>
+
+                    <div class="signup-steps">
+                        <div class="signup-step">
+                            <div class="step-number">
+                                <i class="fa-solid fa-shield-halved" style="font-size: 16px;"></i>
+                            </div>
+                            <div>
+                                <h3>Patient-First Privacy</h3>
+                                <p>You decide which doctor can access your records.</p>
+                            </div>
+                        </div>
+
+                        <div class="signup-step">
+                            <div class="step-number">
+                                <i class="fa-solid fa-user-doctor" style="font-size: 16px;"></i>
+                            </div>
+                            <div>
+                                <h3>Healthcare Provider Access</h3>
+                                <p>Providers can review records, diagnoses, and tests.</p>
+                            </div>
+                        </div>
+
+                        <div class="signup-step">
+                            <div class="step-number">
+                                <i class="fa-solid fa-clock-rotate-left" style="font-size: 16px;"></i>
+                            </div>
+                            <div>
+                                <h3>Full Access Logs</h3>
+                                <p>Every single record view is safely tracked.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- RIGHT LOGIN CARD -->
+            <div class="auth-card-wrapper">
+                <div class="auth-card login-card">
+                    <div class="auth-card-header">
+                        <h2>Login</h2>
+                        <p>Access your dashboard</p>
+                    </div>
+
+                    <!-- Alert message box -->
+                    <div id="loginMessage" class="auth-message"></div>
+
+                    <form id="loginForm">
+                        <!-- Email Address -->
+                        <div class="form-group">
+                            <label for="loginEmail">Email Address</label>
+                            <div class="input-wrapper">
+                                <i class="fa-regular fa-envelope"></i>
+                                <input
+                                    type="email"
+                                    id="loginEmail"
+                                    placeholder="Enter your email"
+                                    required
+                                >
+                            </div>
+                        </div>
+
+                        <!-- Password -->
+                        <div class="form-group">
+                            <label for="loginPassword">Password</label>
+                            <div class="input-wrapper">
+                                <i class="fa-solid fa-lock"></i>
+                                <input
+                                    type="password"
+                                    id="loginPassword"
+                                    placeholder="Enter your password"
+                                    required
+                                >
+                                <button
+                                    type="button"
+                                    class="password-toggle"
+                                    onclick="toggleLoginPassword()"
+                                >
+                                    <i class="fa-regular fa-eye" id="loginEye"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Remember Me & Forgot Password -->
+                        <div class="form-options">
+                            <label>
+                                <input type="checkbox" id="rememberMe">
+                                <span>Remember me</span>
+                            </label>
+                            <a href="#" class="forgot-link">Forgot password?</a>
+                        </div>
+
+                        <!-- Submit Button -->
+                        <button type="submit" class="auth-btn" id="loginSubmitBtn">
+                            <span>Log In</span>
+                            <i class="fa-solid fa-arrow-right"></i>
+                        </button>
+                    </form>
+
+                    <div class="divider">
+                        <span>NEW TO MEDILINK?</span>
+                    </div>
+
+                    <p class="signup-text">
+                        Don't have an account?
+                        <a href="signup.html">Create an Account</a>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="auth-footer">
+        <p>© 2026 MediLink. Your Medical History. Wherever Your Care Takes You.</p>
+    </footer>
+
+    <!-- JAVASCRIPT -->
+    <script src="config.js"></script>
+    <script>
+        const API_BASE_URL = window.MEDILINK_API_BASE_URL || `${window.location.protocol}//${window.location.hostname}:8000`;
+
+        function toggleLoginPassword() {
+            const passwordInput = document.getElementById("loginPassword");
+            const eyeIcon = document.getElementById("loginEye");
+
+            if (passwordInput.type === "password") {
+                passwordInput.type = "text";
+                eyeIcon.classList.remove("fa-eye");
+                eyeIcon.classList.add("fa-eye-slash");
+            } else {
+                passwordInput.type = "password";
+                eyeIcon.classList.remove("fa-eye-slash");
+                eyeIcon.classList.add("fa-eye");
+            }
+        }
+
+        function showMessage(text, isError = true) {
+            const messageEl = document.getElementById("loginMessage");
+            messageEl.textContent = text;
+            messageEl.className = isError ? "auth-message error" : "auth-message success";
+            messageEl.style.display = "block";
+        }
+
+        document.getElementById("loginForm").addEventListener("submit", async function (event) {
+            event.preventDefault();
+
+            const email = document.getElementById("loginEmail").value.trim();
+            const password = document.getElementById("loginPassword").value;
+            const submitBtn = document.getElementById("loginSubmitBtn");
+
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Logging in...`;
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/api/auth/login`, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        email: email,
+                        password: password
+                    })
+                });
+
+                const data = await response.json();
+
+                if (!response.ok) {
+                    let errMsg = "Invalid email or password.";
+                    if (typeof data.detail === "string") {
+                        errMsg = data.detail;
+                    } else if (Array.isArray(data.detail)) {
+                        errMsg = data.detail.map(e => e.msg).join(", ");
+                    }
+                    throw new Error(errMsg);
+                }
+
+                showMessage("Login successful! Redirecting to your dashboard...", false);
+
+                // Store credentials in localStorage
+                localStorage.setItem("access_token", data.access_token);
+                localStorage.setItem("user_role", data.user.role);
+                localStorage.setItem("user_name", data.user.name);
+                localStorage.setItem("user_id", data.user.id);
+                localStorage.setItem("user_email", data.user.email);
+
+                // Redirect based on account role
+                setTimeout(() => {
+                    if (data.user.role === "doctor" || data.user.role === "provider") {
+                        window.location.href = "doctor.html";
+                    } else {
+                        window.location.href = "patient.html";
+                    }
+                }, 800);
+
+            } catch (err) {
+                console.error("Login error:", err);
+                showMessage(err.message || "Unable to connect to the MediLink backend.", true);
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = `<span>Log In</span> <i class="fa-solid fa-arrow-right"></i>`;
+            }
+        });
+    </script>
+</body>
+
+</html>

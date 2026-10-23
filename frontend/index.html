@@ -1,0 +1,826 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>MediLink | Your Medical History. Wherever Your Care Takes You.</title>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<!-- =====================================================
+     NAVBAR
+===================================================== -->
+
+<header class="navbar">
+
+    <div class="container nav-container">
+
+        <!-- Logo -->
+        <a href="#" class="logo">
+            <div class="logo-icon">
+                <i class="fa-solid fa-plus"></i>
+            </div>
+
+            <span>
+                Medi<span>Link</span>
+            </span>
+        </a>
+
+        <!-- Navigation -->
+        <nav class="nav-links">
+
+            <a href="#" class="active">Home</a>
+            <a href="#features">Features</a>
+            <a href="#patients">For Patients</a>
+            <a href="#doctors">For Doctors</a>
+            <a href="#about">About</a>
+
+        </nav>
+
+        <!-- Actions -->
+        <div class="nav-actions">
+
+            <a href="login.html" class="login-btn">
+                Login
+            </a>
+
+            <a href="signup.html" class="signup-btn">
+                Sign Up
+            </a>
+
+        </div>
+
+        <!-- Mobile Menu -->
+        <button class="menu-btn" id="menuBtn">
+            <i class="fa-solid fa-bars"></i>
+        </button>
+
+    </div>
+
+</header>
+
+
+<!-- =====================================================
+     HERO SECTION
+===================================================== -->
+
+<section class="hero">
+
+    <div class="hero-background"></div>
+
+    <div class="container hero-container">
+
+        <!-- Hero Text -->
+        <div class="hero-content">
+
+            <div class="hero-label">
+                SMARTER RECORDS
+                <span>•</span>
+                BETTER CARE
+                <span>•</span>
+                TOGETHER
+            </div>
+
+            <h1>
+                Your Medical History.
+                <br>
+
+                <span>Wherever Your Care</span>
+                <br>
+
+                Takes You.
+            </h1>
+
+            <p>
+                MediLink is a patient-controlled healthcare data platform
+                connecting patients and authorized healthcare providers
+                through a unified longitudinal medical record.
+            </p>
+
+            <div class="hero-buttons">
+
+                <a href="signup.html" class="primary-btn">
+                    Get Started
+                    <i class="fa-solid fa-arrow-right"></i>
+                </a>
+
+                <a href="#how-it-works" class="secondary-btn">
+                    <span class="play-icon">
+                        <i class="fa-solid fa-play"></i>
+                    </span>
+
+                    Watch How It Works
+                </a>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+<section class="showcase-section" id="patients">
+    <div class="container showcase-grid">
+        <div class="showcase-copy">
+            <span class="section-label">FOR PATIENTS</span>
+            <h2>Take control of your care journey.</h2>
+            <p>
+                Securely keep your records in one place, review past visits, and grant access to the professionals who matter most.
+            </p>
+
+            <ul class="check-list">
+                <li><i class="fa-solid fa-circle-check"></i> Full medical timeline at a glance</li>
+                <li><i class="fa-solid fa-circle-check"></i> Permission-based provider access</li>
+                <li><i class="fa-solid fa-circle-check"></i> Medication and document tracking</li>
+            </ul>
+        </div>
+
+        <div class="dashboard-card patient-dashboard">
+            <div class="dashboard-header">
+                <div>
+                    <small>Patient overview</small>
+                    <strong>Sarah M.</strong>
+                </div>
+                <span class="status-pill">Active</span>
+            </div>
+
+            <div class="metric-row">
+                <div class="metric-box">
+                    <span>Records</span>
+                    <strong>12</strong>
+                </div>
+                <div class="metric-box">
+                    <span>Providers</span>
+                    <strong>4</strong>
+                </div>
+                <div class="metric-box">
+                    <span>Alerts</span>
+                    <strong>2</strong>
+                </div>
+            </div>
+
+            <div class="mini-panel">
+                <div class="mini-panel-header">
+                    <h3>Recent care</h3>
+                    <span>Today</span>
+                </div>
+                <div class="mini-list">
+                    <div>
+                        <strong>Cardiology checkup</strong>
+                        <small>Dr. Reynolds</small>
+                    </div>
+                    <div>
+                        <strong>Medication review</strong>
+                        <small>Updated dosage</small>
+                    </div>
+                    <div>
+                        <strong>Lab report</strong>
+                        <small>Uploaded yesterday</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="showcase-section alt" id="doctors">
+    <div class="container showcase-grid reverse">
+        <div class="dashboard-card provider-dashboard">
+            <div class="dashboard-header">
+                <div>
+                    <small>Provider access</small>
+                    <strong>Care team</strong>
+                </div>
+                <span class="status-pill soft">Granted</span>
+            </div>
+
+            <div class="doctor-list">
+                <div class="doctor-row">
+                    <div class="doctor-meta">
+                        <span class="avatar green">DR</span>
+                        <div>
+                            <strong>Dr. Daniel Lee</strong>
+                            <small>Cardiology</small>
+                        </div>
+                    </div>
+                    <button>View records</button>
+                </div>
+                <div class="doctor-row">
+                    <div class="doctor-meta">
+                        <span class="avatar blue">RN</span>
+                        <div>
+                            <strong>Rachel Nguyen</strong>
+                            <small>Primary care</small>
+                        </div>
+                    </div>
+                    <button>Review plan</button>
+                </div>
+                <div class="doctor-row">
+                    <div class="doctor-meta">
+                        <span class="avatar purple">PH</span>
+                        <div>
+                            <strong>PharmD Smith</strong>
+                            <small>Medication review</small>
+                        </div>
+                    </div>
+                    <button>Check meds</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="showcase-copy">
+            <span class="section-label">FOR DOCTORS</span>
+            <h2>Give clinicians the right context faster.</h2>
+            <p>
+                Review patient history, medication plans, and permissions in a single secure workspace built for better decisions and smoother care coordination.
+            </p>
+
+            <ul class="check-list">
+                <li><i class="fa-solid fa-circle-check"></i> Shared record visibility with patient consent</li>
+                <li><i class="fa-solid fa-circle-check"></i> Audit-friendly access logging</li>
+                <li><i class="fa-solid fa-circle-check"></i> Clear communication around treatment plans</li>
+            </ul>
+        </div>
+    </div>
+</section>
+
+<section class="about-section" id="about">
+    <div class="container about-grid">
+        <div class="about-copy">
+            <span class="section-label">ABOUT MEDILINK</span>
+            <h2>Built for clearer care, stronger trust.</h2>
+            <p>
+                MediLink bridges the gap between patients and providers so medical information stays organized, secure, and accessible at the moments that matter most.
+            </p>
+        </div>
+
+        <div class="about-stats">
+            <div>
+                <strong>24/7</strong>
+                <span>Access visibility</span>
+            </div>
+            <div>
+                <strong>100%</strong>
+                <span>Consent-driven access</span>
+            </div>
+            <div>
+                <strong>1 place</strong>
+                <span>For records & permissions</span>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- =====================================================
+     WHY MEDILINK
+===================================================== -->
+
+<section class="why-section" id="features">
+
+    <div class="container">
+
+        <div class="section-heading">
+
+            <span class="section-label">
+                WHY MEDILINK
+            </span>
+
+            <h2>
+                A Smarter, More Connected
+                <br>
+                Healthcare Experience
+            </h2>
+
+        </div>
+
+
+        <div class="benefits-grid">
+
+            <!-- Card 1 -->
+            <div class="benefit-card">
+
+                <div class="benefit-icon blue">
+                    <i class="fa-solid fa-shield-halved"></i>
+                </div>
+
+                <h3>
+                    Secure & Private
+                </h3>
+
+                <p>
+                    Your data, your control.
+                    Always.
+                </p>
+
+            </div>
+
+
+            <!-- Card 2 -->
+            <div class="benefit-card">
+
+                <div class="benefit-icon green">
+                    <i class="fa-solid fa-user"></i>
+                </div>
+
+                <h3>
+                    Patient Controlled
+                </h3>
+
+                <p>
+                    Manage who can access
+                    your information.
+                </p>
+
+            </div>
+
+
+            <!-- Card 3 -->
+            <div class="benefit-card">
+
+                <div class="benefit-icon purple">
+                    <i class="fa-solid fa-file-medical"></i>
+                </div>
+
+                <h3>
+                    Unified Records
+                </h3>
+
+                <p>
+                    All your medical history
+                    in one place.
+                </p>
+
+            </div>
+
+
+            <!-- Card 4 -->
+            <div class="benefit-card">
+
+                <div class="benefit-icon blue">
+                    <i class="fa-solid fa-users"></i>
+                </div>
+
+                <h3>
+                    Connected Providers
+                </h3>
+
+                <p>
+                    Seamless collaboration
+                    across care teams.
+                </p>
+
+            </div>
+
+
+            <!-- Card 5 -->
+            <div class="benefit-card">
+
+                <div class="benefit-icon green">
+                    <i class="fa-solid fa-microchip"></i>
+                </div>
+
+                <h3>
+                    AI Powered
+                </h3>
+
+                <p>
+                    Smarter insights for
+                    better decisions.
+                </p>
+
+                <small>
+                    Future Feature
+                </small>
+
+            </div>
+
+
+            <!-- Card 6 -->
+            <div class="benefit-card">
+
+                <div class="benefit-icon red">
+                    <i class="fa-solid fa-kit-medical"></i>
+                </div>
+
+                <h3>
+                    Emergency Access
+                </h3>
+
+                <p>
+                    Critical information
+                    when it matters most.
+                </p>
+
+                <small>
+                    Future Feature
+                </small>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- =====================================================
+     HOW IT WORKS
+===================================================== -->
+
+<section class="how-section" id="how-it-works">
+
+    <div class="container">
+
+        <div class="section-heading">
+
+            <span class="section-label">
+                HOW IT WORKS
+            </span>
+
+            <h2>
+                Simple, Secure & Connected
+            </h2>
+
+            <p>
+                MediLink makes managing and sharing medical
+                information easier for patients and healthcare providers.
+            </p>
+
+        </div>
+
+
+        <div class="steps-container">
+
+            <!-- Step 1 -->
+            <div class="step">
+
+                <div class="step-number">
+                    01
+                </div>
+
+                <div class="step-icon">
+                    <i class="fa-solid fa-user-plus"></i>
+                </div>
+
+                <h3>
+                    Create Your Profile
+                </h3>
+
+                <p>
+                    Register and create your secure
+                    MediLink healthcare profile.
+                </p>
+
+            </div>
+
+
+            <!-- Step 2 -->
+            <div class="step">
+
+                <div class="step-number">
+                    02
+                </div>
+
+                <div class="step-icon">
+                    <i class="fa-solid fa-file-medical"></i>
+                </div>
+
+                <h3>
+                    Add Your Records
+                </h3>
+
+                <p>
+                    Store consultations, prescriptions,
+                    reports and medical documents.
+                </p>
+
+            </div>
+
+
+            <!-- Step 3 -->
+            <div class="step">
+
+                <div class="step-number">
+                    03
+                </div>
+
+                <div class="step-icon">
+                    <i class="fa-solid fa-user-doctor"></i>
+                </div>
+
+                <h3>
+                    Connect With Doctors
+                </h3>
+
+                <p>
+                    Authorize verified healthcare providers
+                    to access your information.
+                </p>
+
+            </div>
+
+
+            <!-- Step 4 -->
+            <div class="step">
+
+                <div class="step-number">
+                    04
+                </div>
+
+                <div class="step-icon">
+                    <i class="fa-solid fa-heart-pulse"></i>
+                </div>
+
+                <h3>
+                    Better Care
+                </h3>
+
+                <p>
+                    Give healthcare providers the
+                    information they need for better care.
+                </p>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- =====================================================
+     TRUST SECTION
+===================================================== -->
+
+<section class="trust-section">
+
+    <div class="container trust-container">
+
+        <div class="trust-title">
+
+            <span>
+                TRUSTED HEALTHCARE TECHNOLOGY
+            </span>
+
+            <h2>
+                Connecting Patients,
+                Doctors & Healthcare
+            </h2>
+
+        </div>
+
+
+        <div class="trust-item">
+
+            <i class="fa-solid fa-user"></i>
+
+            <div>
+                <h3>Patients</h3>
+
+                <p>
+                    Better access.
+                    Better care.
+                </p>
+            </div>
+
+        </div>
+
+
+        <div class="trust-item">
+
+            <i class="fa-solid fa-stethoscope"></i>
+
+            <div>
+                <h3>Doctors</h3>
+
+                <p>
+                    More context.
+                    Better decisions.
+                </p>
+            </div>
+
+        </div>
+
+
+        <div class="trust-item">
+
+            <i class="fa-solid fa-hospital"></i>
+
+            <div>
+                <h3>Healthcare Providers</h3>
+
+                <p>
+                    Stronger systems.
+                    Healthier communities.
+                </p>
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- =====================================================
+     CALL TO ACTION
+===================================================== -->
+
+<section class="cta-section">
+
+    <div class="container">
+
+        <div class="cta-content">
+
+            <span>
+                YOUR HEALTH. YOUR CONTROL.
+            </span>
+
+            <h2>
+                Start Your Connected
+                Healthcare Journey
+            </h2>
+
+            <p>
+                Keep your medical history organized,
+                secure and accessible wherever you receive care.
+            </p>
+
+            <a href="#" class="primary-btn">
+                Join MediLink
+                <i class="fa-solid fa-arrow-right"></i>
+            </a>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- =====================================================
+     FOOTER
+===================================================== -->
+
+<footer class="footer">
+
+    <div class="container footer-container">
+
+        <div class="footer-brand">
+
+            <a href="#" class="logo">
+
+                <div class="logo-icon">
+                    <i class="fa-solid fa-plus"></i>
+                </div>
+
+                <span>
+                    Medi<span>Link</span>
+                </span>
+
+            </a>
+
+            <p>
+                Your Medical History.
+                Wherever Your Care Takes You.
+            </p>
+
+        </div>
+
+
+        <div class="footer-column">
+
+            <h3>Platform</h3>
+
+            <a href="#features">
+                Features
+            </a>
+
+            <a href="#patients">
+                For Patients
+            </a>
+
+            <a href="#doctors">
+                For Doctors
+            </a>
+
+        </div>
+
+
+        <div class="footer-column">
+
+            <h3>Company</h3>
+
+            <a href="#about">
+                About
+            </a>
+
+            <a href="#">
+                Contact
+            </a>
+
+            <a href="#">
+                Privacy
+            </a>
+
+        </div>
+
+
+        <div class="footer-column">
+
+            <h3>Connect</h3>
+
+            <div class="social-icons">
+
+                <a href="#">
+                    <i class="fa-brands fa-facebook-f"></i>
+                </a>
+
+                <a href="#">
+                    <i class="fa-brands fa-instagram"></i>
+                </a>
+
+                <a href="#">
+                    <i class="fa-brands fa-linkedin-in"></i>
+                </a>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <div class="footer-bottom">
+
+        <p>
+            © 2026 MediLink. All rights reserved.
+        </p>
+
+    </div>
+
+</footer>
+
+
+<!-- =====================================================
+     JAVASCRIPT
+===================================================== -->
+
+<script>
+
+    const menuBtn = document.getElementById("menuBtn");
+    const navLinks = document.querySelector(".nav-links");
+
+    menuBtn.addEventListener("click", () => {
+
+        navLinks.classList.toggle("show");
+
+    });
+
+
+    // Smooth scrolling
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+
+        anchor.addEventListener("click", function (e) {
+
+            const target = document.querySelector(
+                this.getAttribute("href")
+            );
+
+            if (target) {
+
+                e.preventDefault();
+
+                target.scrollIntoView({
+                    behavior: "smooth"
+                });
+
+            }
+
+        });
+
+    });
+
+</script>
+
+</body>
+</html>
