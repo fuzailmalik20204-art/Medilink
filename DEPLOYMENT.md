@@ -17,6 +17,11 @@ PostgreSQL to Render.
 
 The Render service runs Alembic migrations before starting the API. Render
 generates the `SECRET_KEY` and supplies the PostgreSQL connection string.
+The Visit Brief extracts text from saved medical records, PDFs, DOCX files,
+and OCR-supported image/scanned PDF pages. Render installs Tesseract OCR for
+scanned files. Extracted content is processed by the MediLink backend and is
+not sent to an external AI service. Legacy `.doc` files must be converted to
+PDF or DOCX before their contents can be included.
 
 ## Deploy the frontend to Netlify
 
@@ -35,5 +40,6 @@ the current page's host on port 8000.
 
 The free Render database is temporary and may expire; use only throwaway demo
 data. Uploaded files are stored on the web service's local filesystem, which
-is not persistent across deployments/restarts on the free plan. Do not store
+is not persistent across deployments/restarts on the free plan. The Visit
+Brief reports missing files instead of including their contents. Do not store
 real patient information or rely on this setup for production.

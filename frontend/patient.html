@@ -277,6 +277,42 @@
             font-weight: 700;
         }
 
+        .visit-brief-document {
+            padding: 13px;
+            border: 1px solid #e0ebee;
+            border-radius: 10px;
+            background: #fff;
+        }
+
+        .visit-brief-document + .visit-brief-document {
+            margin-top: 10px;
+        }
+
+        .visit-brief-document h4 {
+            margin: 0 0 5px;
+            color: #243b53;
+            font-size: 13px;
+        }
+
+        .visit-brief-document-meta,
+        .visit-brief-document-status {
+            color: #64748b;
+            font-size: 11px;
+            line-height: 1.55;
+        }
+
+        .visit-brief-document-text {
+            margin-top: 9px;
+            padding: 10px;
+            border-left: 3px solid #8bcbd0;
+            background: #f7fbfc;
+            color: #41566b;
+            font-size: 12px;
+            line-height: 1.6;
+            white-space: pre-wrap;
+            overflow-wrap: anywhere;
+        }
+
         .visit-brief-print {
             justify-self: start;
             padding: 9px 13px;
@@ -3072,6 +3108,7 @@
 
             const records = Array.isArray(brief.records) ? brief.records : [];
             const medications = Array.isArray(brief.medications) ? brief.medications : [];
+            const documents = Array.isArray(brief.documents) ? brief.documents : [];
             const questions = Array.isArray(brief.discussion_questions) ? brief.discussion_questions : [];
             const recordItems = records.length
                 ? records.map(record => `
@@ -3092,30 +3129,50 @@
                         ${medication.dosage ? `<span> · ${escapeHtml(medication.dosage)}</span>` : ""}
                         ${medication.frequency ? `<div>${escapeHtml(medication.frequency)}</div>` : ""}
                         <div>Date range: ${escapeHtml(formatDate(medication.start_date))} – ${escapeHtml(formatDate(medication.end_date))}</div>
+                        <div>${medication.within_date_range ? "Saved date range includes today" : "Saved date range is outside today"}</div>
                         ${medication.doctor_name ? `<div>Prescriber entered: ${escapeHtml(medication.doctor_name)}</div>` : ""}
                         <span class="visit-brief-source">${escapeHtml(medication.source)}</span>
                     </li>
                 `).join("")
-                : "<li>No medication entries fall within their saved date range today.</li>";
+                : "<li>No medication entries are saved.</li>";
             const questionItems = questions.length
                 ? questions.map(question => `<li>${escapeHtml(question)}</li>`).join("")
                 : "<li>No discussion prompts available.</li>";
+            const documentItems = documents.length
+                ? documents.map(document => `
+                    <article class="visit-brief-document">
+                        <h4>${escapeHtml(document.title || document.file_name || "Uploaded document")}</h4>
+                        <p class="visit-brief-document-meta">
+                            ${escapeHtml(document.file_name || "")}
+                            ${document.document_type ? ` · ${escapeHtml(document.document_type)}` : ""}
+                            ${document.document_date ? ` · ${escapeHtml(formatDate(document.document_date))}` : ""}
+                            ${document.doctor_name ? ` · Provider: ${escapeHtml(document.doctor_name)}` : ""}
+                        </p>
+                        <p class="visit-brief-document-status">${escapeHtml(document.status_message || "Document not processed.")}</p>
+                        ${document.text ? `<div class="visit-brief-document-text">${escapeHtml(document.text)}</div>` : ""}
+                        <span class="visit-brief-source">${escapeHtml(document.source || `Uploaded document #${document.id}`)}</span>
+                    </article>
+                `).join("")
+                : "<p>No uploaded documents are saved for this patient.</p>";
 
             result.innerHTML = `
                 <div class="visit-brief-section">
                     <h3>At a glance</h3>
-                    <p>${escapeHtml(brief.patient_name)} · ${Number(brief.record_count) || 0} saved record(s) · ${Number(brief.active_medication_count) || 0} medication entr${Number(brief.active_medication_count) === 1 ? "y" : "ies"} dated current</p>
+                    <p>${escapeHtml(brief.patient_name)} · ${Number(brief.record_count) || 0} saved record(s) · ${Number(brief.medications_within_date_range_count) || 0} medication entr${Number(brief.medications_within_date_range_count) === 1 ? "y" : "ies"} within saved date ranges</p>
                     <p class="visit-brief-status">Created ${escapeHtml(formatDateTime(brief.generated_at))}. The medication date range does not confirm what you currently take.</p>
                 </div>
                 <div class="visit-brief-section">
-                    <h3>Recent medical records</h3>
+                    <h3>Medical records (${records.length})</h3>
                     <ul class="visit-brief-list">${recordItems}</ul>
-                    ${brief.records_omitted ? `<p class="visit-brief-status">${Number(brief.records_omitted)} older record(s) omitted from this brief.</p>` : ""}
                 </div>
                 <div class="visit-brief-section">
-                    <h3>Medication entries dated current</h3>
+                    <h3>Saved medication entries (${medications.length})</h3>
                     <ul class="visit-brief-list">${medicationItems}</ul>
-                    ${brief.medications_omitted ? `<p class="visit-brief-status">${Number(brief.medications_omitted)} additional medication entry/entries omitted.</p>` : ""}
+                    <p class="visit-brief-status">The saved date range is not confirmation that a medication is currently being taken.</p>
+                </div>
+                <div class="visit-brief-section">
+                    <h3>Uploaded documents (${Number(brief.documents_read) || 0}/${Number(brief.document_count) || 0} readable)</h3>
+                    ${documentItems}
                 </div>
                 <div class="visit-brief-section">
                     <h3>Questions to discuss</h3>

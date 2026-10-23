@@ -1,19 +1,24 @@
-from datetime import date, datetime, timezone
+import logging
+from pathlib import Path
+from datetime import datetime, timezone
 
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
 from database import get_db
-from models import MedicalRecord, Medication, Patient, User
+from document_content import DocumentContentError, extract_document_content
+from models import Document, MedicalRecord, Medication, Patient, User
 from security import get_current_user
 
 
 router = APIRouter(prefix="/api/visit-brief", tags=["Visit Brief"])
+logger = logging.getLogger(__name__)
+UPLOAD_DIRECTORY = Path(__file__).resolve().parent.parent / "uploads"
 
 
-def build_visit_brief(patient_name, records, medications, today=None):
+def build_visit_brief(patient_name, records, medications, documents, today=None):
     today = today or datetime.now(timezone.utc).date()
-    current_medications = [
+    within_date_range_medications = [
         medication
         for medication in medications
         if not (
@@ -21,15 +26,12 @@ def build_visit_brief(patient_name, records, medications, today=None):
             or (medication.end_date and medication.end_date < today)
         )
     ]
-    recent_records = records[:10]
-    listed_medications = current_medications[:12]
-
     discussion_questions = [
         "Which details in this brief are most important for today's visit?",
         "What follow-up or next steps should I understand after this visit?",
     ]
     latest_diagnosis = next(
-        (record.diagnosis for record in recent_records if record.diagnosis),
+        (record.diagnosis for record in records if record.diagnosis),
         None,
     )
     if latest_diagnosis:
@@ -37,7 +39,7 @@ def build_visit_brief(patient_name, records, medications, today=None):
             0,
             f"What should I understand about the diagnosis recorded as “{latest_diagnosis}”?",
         )
-    if current_medications:
+    if medications:
         discussion_questions.append(
             "Could you confirm that this medication list is current and complete?"
         )
@@ -46,7 +48,7 @@ def build_visit_brief(patient_name, records, medications, today=None):
         "patient_name": patient_name,
         "generated_at": datetime.now(timezone.utc).isoformat(),
         "record_count": len(records),
-        "active_medication_count": len(current_medications),
+        "medications_within_date_range_count": len(within_date_range_medications),
         "records": [
             {
                 "id": record.id,
@@ -57,9 +59,8 @@ def build_visit_brief(patient_name, records, medications, today=None):
                 "doctor_name": record.doctor_name,
                 "source": f"Medical record #{record.id}",
             }
-            for record in recent_records
+            for record in records
         ],
-        "records_omitted": len(records) - len(recent_records),
         "medications": [
             {
                 "id": medication.id,
@@ -69,17 +70,20 @@ def build_visit_brief(patient_name, records, medications, today=None):
                 "start_date": medication.start_date.isoformat() if medication.start_date else None,
                 "end_date": medication.end_date.isoformat() if medication.end_date else None,
                 "doctor_name": medication.doctor_name,
+                "within_date_range": medication in within_date_range_medications,
                 "source": f"Medication entry #{medication.id}",
             }
-            for medication in listed_medications
+            for medication in medications
         ],
-        "medications_omitted": len(current_medications) - len(listed_medications),
+        "documents": documents,
+        "document_count": len(documents),
+        "documents_read": sum(document["extraction_status"] in {"read", "partial"} for document in documents),
         "discussion_questions": discussion_questions,
         "notice": (
-            "This template-based brief organizes information saved in MediLink. "
-            "It is not an AI-generated medical assessment, diagnosis, or treatment advice. "
+            "This source-based brief organizes information saved in MediLink; it does not infer what a patient has or diagnose. "
+            "Extracted document text and OCR can contain errors; verify it against the original file. "
             "Medication dates do not confirm what you currently take; verify details with your clinician. "
-            "Uploaded document contents are not included."
+            "No uploaded content is sent to an external AI service. Missing or unreadable document content is identified."
         ),
     }
 
@@ -109,4 +113,66 @@ def get_visit_brief(
         .all()
     )
 
-    return build_visit_brief(current_user.name, records, medications)
+    document_rows = (
+        db.query(Document)
+        .filter(Document.patient_id == patient.id)
+        .order_by(Document.document_date.desc(), Document.created_at.desc(), Document.id.desc())
+        .all()
+    )
+    documents = []
+    for document in document_rows:
+        try:
+            relative_path = Path(document.file_path)
+            if relative_path.is_absolute():
+                raise DocumentContentError("Stored document path is invalid.")
+            full_path = (UPLOAD_DIRECTORY.parent / relative_path).resolve()
+            if not full_path.is_relative_to(UPLOAD_DIRECTORY.resolve()):
+                raise DocumentContentError("Stored document path is invalid.")
+            extraction = extract_document_content(full_path, document.file_name)
+            documents.append({
+                "id": document.id,
+                "title": document.title,
+                "document_type": document.document_type,
+                "file_name": document.file_name,
+                "document_date": document.document_date.isoformat() if document.document_date else None,
+                "doctor_name": document.doctor_name,
+                "extraction_status": extraction["status"],
+                "status_message": extraction["status_message"],
+                "ocr_used": extraction["ocr_used"],
+                "truncated": extraction["truncated"],
+                "text": extraction["text"],
+                "source": f"Uploaded document #{document.id}: {document.file_name}",
+            })
+        except DocumentContentError as error:
+            documents.append({
+                "id": document.id,
+                "title": document.title,
+                "document_type": document.document_type,
+                "file_name": document.file_name,
+                "document_date": document.document_date.isoformat() if document.document_date else None,
+                "doctor_name": document.doctor_name,
+                "extraction_status": "unavailable",
+                "status_message": str(error),
+                "ocr_used": False,
+                "truncated": False,
+                "text": None,
+                "source": f"Uploaded document #{document.id}: {document.file_name}",
+            })
+        except OSError:
+            logger.exception("Unable to read uploaded document %s for visit brief", document.id)
+            documents.append({
+                "id": document.id,
+                "title": document.title,
+                "document_type": document.document_type,
+                "file_name": document.file_name,
+                "document_date": document.document_date.isoformat() if document.document_date else None,
+                "doctor_name": document.doctor_name,
+                "extraction_status": "unavailable",
+                "status_message": "The uploaded file could not be accessed. Re-upload it to include its contents.",
+                "ocr_used": False,
+                "truncated": False,
+                "text": None,
+                "source": f"Uploaded document #{document.id}: {document.file_name}",
+            })
+
+    return build_visit_brief(current_user.name, records, medications, documents)

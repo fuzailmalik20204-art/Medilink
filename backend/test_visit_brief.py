@@ -1,13 +1,17 @@
 import unittest
 from datetime import date, timedelta
+from pathlib import Path
+from tempfile import TemporaryDirectory
+from unittest.mock import patch
 
 from fastapi import HTTPException
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.pool import StaticPool
+from docx import Document as WordDocument
 
 from database import Base
-from models import MedicalRecord, Medication, Patient, User
+from models import Document, MedicalRecord, Medication, Patient, User
 from routes.visit_brief import get_visit_brief
 
 
@@ -95,9 +99,20 @@ class VisitBriefTests(unittest.TestCase):
         self.assertEqual(brief["record_count"], 1)
         self.assertEqual(brief["records"][0]["source"], "Medical record #1")
         self.assertEqual(brief["records"][0]["diagnosis"], "Example condition")
-        self.assertEqual(brief["active_medication_count"], 1)
-        self.assertEqual(brief["medications"][0]["name"], "Current medicine")
-        self.assertIn("not an AI-generated medical assessment", brief["notice"])
+        self.assertEqual(brief["medications_within_date_range_count"], 1)
+        current_medication = next(
+            medication
+            for medication in brief["medications"]
+            if medication["name"] == "Current medicine"
+        )
+        past_medication = next(
+            medication
+            for medication in brief["medications"]
+            if medication["name"] == "Past medicine"
+        )
+        self.assertTrue(current_medication["within_date_range"])
+        self.assertFalse(past_medication["within_date_range"])
+        self.assertIn("does not infer what a patient has", brief["notice"])
         self.assertTrue(brief["discussion_questions"])
 
     def test_non_patient_cannot_generate_visit_brief(self):
@@ -120,6 +135,78 @@ class VisitBriefTests(unittest.TestCase):
             get_visit_brief(unprofiled_patient, self.db)
 
         self.assertEqual(error.exception.status_code, 404)
+
+    def test_brief_extracts_only_the_signed_in_patients_documents(self):
+        with TemporaryDirectory() as upload_directory:
+            uploads = Path(upload_directory) / "uploads"
+            uploads.mkdir()
+            document_path = uploads / "visit.docx"
+            document_file = WordDocument()
+            document_file.add_paragraph("Documented visit note for this patient.")
+            document_file.save(document_path)
+
+            self.db.add(
+                Document(
+                    patient_id=self.patient.id,
+                    title="Visit note",
+                    file_name="visit.docx",
+                    file_path="uploads/visit.docx",
+                )
+            )
+            another_patient_user = User(
+                name="Another Patient",
+                email="another-patient@example.test",
+                password="not-a-real-password-hash",
+                role="patient",
+            )
+            self.db.add(another_patient_user)
+            self.db.flush()
+            another_patient = Patient(
+                user_id=another_patient_user.id,
+                patient_id="PAT-OTHER",
+            )
+            self.db.add(another_patient)
+            self.db.flush()
+            self.db.add(
+                Document(
+                    patient_id=another_patient.id,
+                    title="Private note",
+                    file_name="private.docx",
+                    file_path="private.docx",
+                )
+            )
+            self.db.commit()
+
+            with patch("routes.visit_brief.UPLOAD_DIRECTORY", uploads):
+                brief = get_visit_brief(self.patient_user, self.db)
+
+        self.assertEqual(brief["document_count"], 1)
+        self.assertEqual(brief["documents_read"], 1)
+        self.assertIn("Documented visit note", brief["documents"][0]["text"])
+        self.assertIn("Uploaded document #", brief["documents"][0]["source"])
+
+    def test_brief_includes_all_saved_records_and_medications(self):
+        today = date.today()
+        self.db.add_all(
+            [
+                MedicalRecord(
+                    patient_id=self.patient.id,
+                    title=f"Record {index}",
+                    record_date=today,
+                )
+                for index in range(12)
+            ]
+            + [
+                Medication(patient_id=self.patient.id, name=f"Medication {index}")
+                for index in range(13)
+            ]
+        )
+        self.db.commit()
+
+        brief = get_visit_brief(self.patient_user, self.db)
+
+        self.assertEqual(len(brief["records"]), 12)
+        self.assertEqual(len(brief["medications"]), 13)
 
 
 if __name__ == "__main__":
