@@ -3,17 +3,23 @@ from pathlib import Path
 from datetime import datetime, timezone
 
 from fastapi import APIRouter, Depends, HTTPException
+from pydantic import BaseModel
 from sqlalchemy.orm import Session
 
 from database import get_db
 from document_content import DocumentContentError, extract_document_content
 from models import Document, MedicalRecord, Medication, Patient, User
 from security import get_current_user
+from visit_brief_ai import analyze_sources_with_openai, build_ai_sources
 
 
 router = APIRouter(prefix="/api/visit-brief", tags=["Visit Brief"])
 logger = logging.getLogger(__name__)
 UPLOAD_DIRECTORY = Path(__file__).resolve().parent.parent / "uploads"
+
+
+class VisitBriefAnalysisConsent(BaseModel):
+    consent_to_external_processing: bool
 
 
 def build_visit_brief(patient_name, records, medications, documents, today=None):
@@ -83,7 +89,9 @@ def build_visit_brief(patient_name, records, medications, documents, today=None)
             "This source-based brief organizes information saved in MediLink; it does not infer what a patient has or diagnose. "
             "Extracted document text and OCR can contain errors; verify it against the original file. "
             "Medication dates do not confirm what you currently take; verify details with your clinician. "
-            "No uploaded content is sent to an external AI service. Missing or unreadable document content is identified."
+            "Generating this source-based brief does not contact an AI service. "
+            "AI analysis, when separately requested with consent, sends record and extracted document text to OpenAI. "
+            "Missing or unreadable document content is identified."
         ),
     }
 
@@ -176,3 +184,23 @@ def get_visit_brief(
             })
 
     return build_visit_brief(current_user.name, records, medications, documents)
+
+
+@router.post("/analyze")
+async def analyze_visit_brief(
+    consent: VisitBriefAnalysisConsent,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    if current_user.role != "patient":
+        raise HTTPException(status_code=403, detail="Only patients can analyze their own visit brief")
+    if not consent.consent_to_external_processing:
+        raise HTTPException(
+            status_code=400,
+            detail="Consent is required before sending record text to OpenAI.",
+        )
+
+    brief = get_visit_brief(current_user, db)
+    sources = build_ai_sources(brief)
+    analysis = await analyze_sources_with_openai(sources)
+    return analysis

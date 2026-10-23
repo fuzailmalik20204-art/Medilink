@@ -19,9 +19,16 @@ The Render Docker image installs Tesseract OCR and the Python dependencies.
 The container runs Alembic migrations before starting the API. Render
 generates the `SECRET_KEY` and supplies the PostgreSQL connection string.
 The Visit Brief extracts text from saved medical records, PDFs, DOCX files,
-and OCR-supported image/scanned PDF pages. Extracted content is processed by
-the MediLink backend and is not sent to an external AI service. Legacy `.doc`
-files must be converted to PDF or DOCX before their contents can be included.
+and OCR-supported image/scanned PDF pages on the backend. The template-based
+brief does not send data to an AI service. The optional AI analysis sends the
+patient's record fields and extracted document text to OpenAI only after the
+patient explicitly consents in the dashboard. It uses `OPENAI_API_KEY` and the
+optional `OPENAI_MODEL` environment variable; configure the API key in the
+Render service environment, never in Git. The configured OpenAI project must
+have API access and available billing/quota. The AI output cites source IDs and
+is limited to statements explicitly supported by records; users must verify it
+with a clinician. Legacy `.doc` files must be converted to PDF or DOCX before
+their contents can be included.
 
 ## Deploy the frontend to Netlify
 

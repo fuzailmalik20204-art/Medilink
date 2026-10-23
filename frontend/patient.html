@@ -313,6 +313,90 @@
             overflow-wrap: anywhere;
         }
 
+        .visit-brief-ai-consent {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            margin-top: 16px;
+            padding: 13px;
+            border: 1px solid #f0d8a8;
+            border-radius: 10px;
+            background: #fffbeb;
+            color: #684d1d;
+            font-size: 12px;
+            line-height: 1.55;
+        }
+
+        .visit-brief-ai-consent input {
+            margin-top: 3px;
+            accent-color: #087f8c;
+        }
+
+        .visit-brief-ai-button {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            min-height: 40px;
+            margin-top: 12px;
+            padding: 0 15px;
+            border: 1px solid #b8dce0;
+            border-radius: 10px;
+            background: #fff;
+            color: #086773;
+            font: 700 12px "Inter", sans-serif;
+            cursor: pointer;
+        }
+
+        .visit-brief-ai-button:disabled {
+            cursor: not-allowed;
+            opacity: .55;
+        }
+
+        .visit-brief-ai-result {
+            display: grid;
+            gap: 12px;
+            margin-top: 16px;
+        }
+
+        .visit-brief-ai-result:empty {
+            display: none;
+        }
+
+        .visit-brief-ai-panel {
+            padding: 13px;
+            border: 1px solid #e0ebee;
+            border-radius: 10px;
+            background: #fff;
+        }
+
+        .visit-brief-ai-panel h4 {
+            margin-bottom: 8px;
+            color: #173b4b;
+            font-size: 13px;
+        }
+
+        .visit-brief-ai-panel p,
+        .visit-brief-ai-panel li {
+            color: #41566b;
+            font-size: 12px;
+            line-height: 1.6;
+        }
+
+        .visit-brief-ai-panel ul {
+            display: grid;
+            gap: 9px;
+            padding-left: 18px;
+        }
+
+        .visit-brief-ai-citations {
+            display: block;
+            margin-top: 4px;
+            color: #087f8c !important;
+            font-size: 11px !important;
+            font-weight: 700;
+        }
+
         .visit-brief-print {
             justify-self: start;
             padding: 9px 13px;
@@ -2591,9 +2675,20 @@
                 </button>
             </div>
             <p class="visit-brief-notice">
-                Private and template-generated—no data is sent to an AI service. This is not medical advice;
-                verify medication details with your clinician. Uploaded document contents are not included.
+                Your source-based brief is prepared by MediLink. AI analysis is a separate, optional action.
+                This feature reports documented information; it does not diagnose or predict.
             </p>
+            <label class="visit-brief-ai-consent" for="visitBriefAiConsent">
+                <input type="checkbox" id="visitBriefAiConsent" onchange="toggleVisitBriefAiConsent()">
+                <span>I consent to send my saved medical-record, medication, and extracted uploaded-document text to OpenAI for a source-cited summary. The summary is not medical advice. I will verify its statements against the original records.</span>
+            </label>
+            <button type="button" class="visit-brief-ai-button" id="analyzeVisitBriefButton"
+                onclick="analyzeVisitBriefWithAI()" disabled>
+                <i class="fa-solid fa-magnifying-glass-chart" aria-hidden="true"></i>
+                Analyze documented status with AI
+            </button>
+            <div class="visit-brief-status" id="visitBriefAiStatus" aria-live="polite"></div>
+            <div class="visit-brief-ai-result" id="visitBriefAiResult"></div>
             <div class="visit-brief-status" id="visitBriefStatus" aria-live="polite"></div>
             <div class="visit-brief-result" id="visitBriefResult"></div>
         </section>
@@ -3190,6 +3285,114 @@
             document.body.classList.add("printing-visit-brief");
             window.print();
             document.body.classList.remove("printing-visit-brief");
+        }
+
+        function toggleVisitBriefAiConsent() {
+            const consent = document.getElementById("visitBriefAiConsent");
+            const button = document.getElementById("analyzeVisitBriefButton");
+            if (consent && button) button.disabled = !consent.checked;
+        }
+
+        function renderVisitBriefAi(data) {
+            const container = document.getElementById("visitBriefAiResult");
+            if (!container) return;
+
+            const analysis = data.analysis || {};
+            const sources = data.sources || {};
+            const citations = sourceIds => {
+                const ids = Array.isArray(sourceIds) ? sourceIds : [];
+                return ids.map(id => {
+                    const source = sources[id] || {};
+                        const label = source.label || id;
+                    const date = source.date ? ` · ${formatDate(source.date)}` : "";
+                        return `${id}: ${label}${date}`;
+                }).map(escapeHtml).join("; ");
+            };
+            const overview = Array.isArray(analysis.overview) ? analysis.overview : [];
+            const conditions = Array.isArray(analysis.documented_conditions) ? analysis.documented_conditions : [];
+            const facts = Array.isArray(analysis.recorded_facts) ? analysis.recorded_facts : [];
+            const limitations = Array.isArray(analysis.limitations) ? analysis.limitations : [];
+            const sourceList = (items, statementKey) => items.length
+                ? `<ul>${items.map(item => `
+                    <li>
+                        ${escapeHtml(item[statementKey] || item.condition || "")}
+                        <span class="visit-brief-ai-citations">Sources: ${citations(item.source_ids)}</span>
+                    </li>
+                `).join("")}</ul>`
+                : "<p>No explicitly documented items to show in this section.</p>";
+            const conditionList = conditions.length
+                ? `<ul>${conditions.map(condition => `
+                    <li>
+                        <strong>${escapeHtml(condition.condition)}</strong>
+                        <div>Status as recorded: ${escapeHtml(condition.status_as_recorded)}</div>
+                        <div>Documented cause: ${escapeHtml(condition.documented_cause)}</div>
+                        <span class="visit-brief-ai-citations">Sources: ${citations(condition.source_ids)}</span>
+                    </li>
+                `).join("")}</ul>`
+                : "<p>No explicitly named conditions were found in the analyzed sources.</p>";
+
+            container.innerHTML = `
+                <p class="visit-brief-notice">${escapeHtml(data.notice || "AI-generated, source-cited information. Verify each statement against the source record.")}</p>
+                <div class="visit-brief-ai-panel">
+                    <h4>Documented status (not a diagnosis)</h4>
+                    ${sourceList(overview, "statement")}
+                </div>
+                <div class="visit-brief-ai-panel">
+                    <h4>Conditions explicitly named in records</h4>
+                    ${conditionList}
+                </div>
+                <div class="visit-brief-ai-panel">
+                    <h4>Other recorded facts</h4>
+                    ${sourceList(facts, "statement")}
+                </div>
+                <div class="visit-brief-ai-panel">
+                    <h4>Record limitations</h4>
+                    ${limitations.length ? `<ul>${limitations.map(item => `<li>${escapeHtml(item)}</li>`).join("")}</ul>` : "<p>No additional limitations were returned by the AI; still verify the original records.</p>"}
+                </div>
+                <p class="visit-brief-status">Generated ${escapeHtml(formatDateTime(data.generated_at))} with ${escapeHtml(data.model || "the configured AI model")}.</p>
+            `;
+        }
+
+        async function analyzeVisitBriefWithAI() {
+            const consent = document.getElementById("visitBriefAiConsent");
+            const button = document.getElementById("analyzeVisitBriefButton");
+            const status = document.getElementById("visitBriefAiStatus");
+            const result = document.getElementById("visitBriefAiResult");
+            const token = getAuthToken();
+            if (!button || !status || !result) return;
+            if (!consent || !consent.checked) {
+                status.textContent = "Please consent before sending record text to OpenAI.";
+                return;
+            }
+            if (!token) {
+                status.textContent = "Your session has expired. Please log in again.";
+                return;
+            }
+
+            button.disabled = true;
+            status.textContent = "Analyzing the documented information and preparing citations…";
+            result.innerHTML = "";
+            try {
+                const response = await fetch(`${API_BASE_URL}/api/visit-brief/analyze`, {
+                    method: "POST",
+                    headers: {
+                        "Authorization": `Bearer ${token}`,
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({ consent_to_external_processing: true })
+                });
+                const data = await response.json();
+                if (!response.ok) {
+                    throw new Error(data.detail || "Unable to analyze the records.");
+                }
+                renderVisitBriefAi(data);
+                status.textContent = "AI analysis is ready. Confirm each cited statement against the original record.";
+            } catch (error) {
+                console.error("Visit Brief AI analysis error:", error);
+                status.textContent = `Unable to analyze records: ${error.message}`;
+            } finally {
+                button.disabled = !consent.checked;
+            }
         }
 
         async function generateVisitBrief() {

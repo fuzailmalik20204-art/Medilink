@@ -14,3 +14,4 @@ pymupdf==1.26.5
 python-docx==1.2.0
 pillow==12.0.0
 pytesseract==0.3.13
+httpx==0.28.1

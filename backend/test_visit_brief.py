@@ -13,6 +13,7 @@ from docx import Document as WordDocument
 from database import Base
 from models import Document, MedicalRecord, Medication, Patient, User
 from routes.visit_brief import get_visit_brief
+from routes.visit_brief import VisitBriefAnalysisConsent, analyze_visit_brief
 
 
 class VisitBriefTests(unittest.TestCase):
@@ -120,6 +121,18 @@ class VisitBriefTests(unittest.TestCase):
             get_visit_brief(self.other_user, self.db)
 
         self.assertEqual(error.exception.status_code, 403)
+
+    def test_analysis_requires_patient_external_processing_consent(self):
+        with self.assertRaises(HTTPException) as error:
+            import asyncio
+            asyncio.run(
+                analyze_visit_brief(
+                    VisitBriefAnalysisConsent(consent_to_external_processing=False),
+                    self.patient_user,
+                    self.db,
+                )
+            )
+        self.assertEqual(error.exception.status_code, 400)
 
     def test_missing_patient_profile_returns_not_found(self):
         unprofiled_patient = User(

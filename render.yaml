@@ -15,6 +15,10 @@ services:
         generateValue: true
       - key: ALLOWED_ORIGINS
         value: https://medilinkhealth.netlify.app
+      - key: OPENAI_API_KEY
+        sync: false
+      - key: OPENAI_MODEL
+        value: gpt-4o-mini
 
 databases:
   - name: medilink-db
