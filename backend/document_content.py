@@ -7,6 +7,7 @@ from docx import Document as WordDocument
 from docx.opc.exceptions import PackageNotFoundError
 from PIL import Image, ImageOps
 import pytesseract
+from pytesseract import TesseractNotFoundError, TesseractError
 
 
 logger = logging.getLogger(__name__)
@@ -30,11 +31,11 @@ def _limit_text(text):
 def _ocr_image(image):
     try:
         return pytesseract.image_to_string(ImageOps.exif_transpose(image))
-    except pytesseract.TesseractNotFoundError as error:
+    except TesseractNotFoundError as error:
         raise DocumentContentError(
             "OCR is unavailable on this server. Install Tesseract OCR and retry."
         ) from error
-    except pytesseract.TesseractError as error:
+    except TesseractError as error:
         raise DocumentContentError("OCR could not read this image.") from error
 
 

@@ -15,13 +15,13 @@ PostgreSQL to Render.
 4. Wait for the API service to finish deploying. Check that its `/` URL returns
    a JSON response with `"status": "Backend is running"`.
 
-The Render service runs Alembic migrations before starting the API. Render
+The Render Docker image installs Tesseract OCR and the Python dependencies.
+The container runs Alembic migrations before starting the API. Render
 generates the `SECRET_KEY` and supplies the PostgreSQL connection string.
 The Visit Brief extracts text from saved medical records, PDFs, DOCX files,
-and OCR-supported image/scanned PDF pages. Render installs Tesseract OCR for
-scanned files. Extracted content is processed by the MediLink backend and is
-not sent to an external AI service. Legacy `.doc` files must be converted to
-PDF or DOCX before their contents can be included.
+and OCR-supported image/scanned PDF pages. Extracted content is processed by
+the MediLink backend and is not sent to an external AI service. Legacy `.doc`
+files must be converted to PDF or DOCX before their contents can be included.
 
 ## Deploy the frontend to Netlify
 

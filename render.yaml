@@ -1,11 +1,10 @@
 services:
   - type: web
     name: medilink-api
-    runtime: python
+    runtime: docker
     plan: free
-    rootDir: backend
-    buildCommand: apt-get update && apt-get install -y tesseract-ocr && pip install --upgrade pip && pip install -r requirements.txt
-    startCommand: bash -lc "alembic upgrade head && uvicorn main:app --host 0.0.0.0 --port ${PORT}"
+    dockerfilePath: ./backend/Dockerfile
+    dockerContext: ./backend
     healthCheckPath: /
     envVars:
       - key: DATABASE_URL
@@ -14,8 +13,6 @@ services:
           property: connectionString
       - key: SECRET_KEY
         generateValue: true
-      - key: PYTHON_VERSION
-        value: 3.11.11
       - key: ALLOWED_ORIGINS
         value: https://medilinkhealth.netlify.app
 
