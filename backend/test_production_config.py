@@ -33,6 +33,16 @@ class ProductionConfigTests(unittest.TestCase):
         url = database.build_database_url()
         self.assertTrue(url.startswith("sqlite:///"), url)
 
+    def test_database_url_normalizes_render_postgres_scheme(self):
+        os.environ["DATABASE_URL"] = "postgres://user:password@host:5432/medilink"
+
+        url = database.build_database_url()
+
+        self.assertEqual(
+            url,
+            "postgresql://user:password@host:5432/medilink",
+        )
+
     def test_allowed_origins_parses_csv_values(self):
         os.environ["ALLOWED_ORIGINS"] = "http://localhost:3000, https://app.example.com, http://127.0.0.1:5500"
         origins = database.parse_allowed_origins()

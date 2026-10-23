@@ -15,7 +15,7 @@ services:
       - key: SECRET_KEY
         generateValue: true
       - key: ALLOWED_ORIGINS
-        sync: false
+        value: https://medilinkhealth.netlify.app
 
 databases:
   - name: medilink-db

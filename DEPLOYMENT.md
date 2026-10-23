@@ -8,10 +8,10 @@ PostgreSQL to Render.
 1. Push this project to a Git repository and connect it to Render.
 2. In Render, create a Blueprint instance from the repository's `render.yaml`.
    It defines the API service and PostgreSQL database.
-3. Set the API service's `ALLOWED_ORIGINS` environment variable to the exact
-   Netlify site origin, for example `https://your-site.netlify.app` (no path or
-   trailing slash). If you use a custom domain, include that origin too,
-   comma-separated.
+3. The Blueprint already sets `ALLOWED_ORIGINS` to
+   `https://medilinkhealth.netlify.app`. If you use a different Netlify site
+   URL or custom domain, update that value in `render.yaml` before syncing the
+   Blueprint.
 4. Wait for the API service to finish deploying. Check that its `/` URL returns
    a JSON response with `"status": "Backend is running"`.
 

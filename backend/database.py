@@ -40,7 +40,10 @@ def build_database_url():
     settings = require_database_settings()
 
     if "DATABASE_URL" in settings:
-        return settings["DATABASE_URL"]
+        database_url = settings["DATABASE_URL"]
+        if database_url.startswith("postgres://"):
+            return database_url.replace("postgres://", "postgresql://", 1)
+        return database_url
 
     if not settings:
         db_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "medilink.db"))
